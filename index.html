@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<meta name="app-version" content="1.0.5">
+<meta name="app-version" content="1.0.6">
 <title>英语口语工作台 · 影子英语老师</title>
 <style>
 /* ================= 基础变量与主题（深色 · 克制的高级感） ================= */
@@ -298,7 +298,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
     background:rgba(16,20,28,.97);border-top:1px solid var(--line);border-bottom:none;padding:8px 6px;
     backdrop-filter:blur(10px);
   }
-  .tab{font-size:12px;padding:8px 6px;flex:1;text-align:center}
+  .tab{font-size:11px;padding:8px 2px;flex:1;text-align:center}
   main{padding-bottom:86px}
   .hero-title{font-size:22px}
   .composer-row{flex-wrap:wrap}
@@ -327,6 +327,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
 <!-- ================= 导航 ================= -->
 <nav class="tabs">
   <button class="tab active" data-view="home">首页</button>
+  <button class="tab" data-view="daily">日常对话</button>
   <button class="tab" data-view="main">主线对话</button>
   <button class="tab" data-view="side">支线任务</button>
   <button class="tab" data-view="level">我的段位</button>
@@ -434,6 +435,31 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
         <span id="endHint" class="hint small"></span>
         <button id="btnEndChat" class="btn" disabled>结束本次对话</button>
       </div>
+    </div>
+  </section>
+
+  <!-- ================= 日常对话页（随意聊天，不打卡不教学） ================= -->
+  <section class="view" id="view-daily">
+    <div class="main-head">
+      <h2>日常对话 · 随便聊聊</h2>
+      <p class="hint">不限主线、不打卡、不纠错加压——像和朋友聊天一样随便说，按住说话或打字都行。选个话题开始，或直接开聊。</p>
+      <div class="row" id="dailyTopics"></div>
+      <div class="row"><button id="btnDailyNew" class="btn ghost small">🔄 清空重来</button></div>
+    </div>
+
+    <div class="chat card" id="dailyChatBox"></div>
+
+    <div class="composer card">
+      <div class="composer-row voice-row" id="dailyVoiceMode">
+        <button id="btnDailyTalk" class="btn talk">🎤 按住说话</button>
+        <button id="btnDailyType" class="btn ghost small">✏️ 打字</button>
+      </div>
+      <div class="composer-row hidden" id="dailyTypeMode">
+        <textarea id="dailyInputText" placeholder="随便说点什么…（回车发送）"></textarea>
+        <button id="btnDailyBackVoice" class="btn ghost small">🎤</button>
+        <button id="btnDailySend" class="btn primary">发送</button>
+      </div>
+      <div id="dailyMicHint" class="hint small"></div>
     </div>
   </section>
 
@@ -1243,6 +1269,7 @@ function defaultState(){
     },
     level: { index:3, progress:0 },   // 默认 A1-1
     records: {},                       // 日期 -> 当天记录
+    dailyChat: { messages:[], topic:'' },   // 日常闲聊会话（随意聊，不打卡）
     levelHistory: [],
     dropAnchor:'',                     // 掉段/首次启动的计数锚点
     notice:'',
@@ -1266,6 +1293,7 @@ function normalize(s){
   delete s.settings.voice.useQwenTTS;
   s.level = Object.assign(def.level, s.level || {});
   s.records = s.records || {};
+  s.dailyChat = Object.assign({ messages:[], topic:'' }, s.dailyChat || {});
   s.levelHistory = s.levelHistory || [];
   s.dropAnchor = s.dropAnchor || '';
   s.notice = s.notice || '';
@@ -1403,13 +1431,39 @@ function SYSTEM(topic){
   roleLine +
   '【我的情况】我是中文母语者，正在提升日常英语口语与流利度，一年后要去美国旅行。\n' +
   '【对话规则】\n' +
-  '1. 我们用英文对话，像朋友聊天一样自然。我每说一句，你先自然回应、推进话题，再视情况纠错。\n' +
+  '0. 语气要求：像真人朋友说话，有情绪、有节奏——可以用省略式（gonna、wanna、can\'t、I\'m）、语气词（well、you know、hmm、oh、actually、like）、感叹与停顿（！、…、?），长短句交替，避免书面语和机械腔。\n' +
+  '1. 我会一口气说一段英文（可能几句到十几句），请等我全部说完再回应，不要中途插话；先自然回应、推进话题，再视情况纠错。\n' +
   '2. 纠错不是每轮都有：只纠正最严重的错误（明显不地道或严重影响理解），不要每句打断；说得好就爽快认可并继续。\n' +
   '3. 每次纠错：先一句总体鼓励，再只挑 1-3 个最值得改的点，严格按三段格式：\n' +
   '【你说】我的原话\n【更好地说】母语者会怎么说的版本\n【为什么】一句话点明区别\n' +
   '4. 纠错优先级：地道自然 > 用词准确 > 短语搭配 > 句子结构 > 语法。不影响理解的小语法错误不要提。\n' +
   '5. 每次回复 2-4 句英文，结尾自然地问一个问题，让我继续往下说。\n' +
   '6. 收到"结束/复盘"指令时，立刻用中文输出【今日复盘】：先给一句总体鼓励；再挑 2-3 个"可以说得更地道"的点，每条严格按：你说 → 更好地说 → 为什么；然后附【地道表达】2-3 个本话题高频短语或习语，每个格式：短语（中文意思）—— 使用场景例句（英文一句）；最后给一句明天的建议。总长控制在 260 字内。';
+}
+
+/* 日常闲聊：快速起话题 */
+const DAILY_TOPICS = [
+  { en:'How was your day?', opener:'Hey! Good to see you. 😊 How was your day? Anything interesting happen?' },
+  { en:'The weather', opener:'So, how is the weather where you are? It has been crazy here — one minute sunny, the next pouring rain!' },
+  { en:'Movies and shows', opener:'Have you watched anything good lately? I need a new show to get into.' },
+  { en:'Food', opener:'Okay, important question — what is your favorite food right now? I could talk about food all day, haha.' },
+  { en:'Travel', opener:'If you could go anywhere tomorrow, where would you go and why?' },
+  { en:'Music', opener:'What have you been listening to lately? I am always looking for new songs.' },
+  { en:'Tech', opener:'Do you follow new tech stuff? That new phone looks amazing, but the price… wow.' },
+  { en:'Anything', opener:'Alright, no topic today — just chat. What is on your mind?' }
+];
+/* 日常闲聊的系统提示词：像老朋友聊天，不纠错、不教学 */
+function DAILY_SYSTEM(){
+  const topic = state.dailyChat && state.dailyChat.topic;
+  return '你是我的英语口语陪练"影子老师"，现在是【日常闲聊】模式：像老朋友一样轻松自然地聊天，不限话题、不打卡、不教学。\n' +
+  (topic ? '【今日闲聊话题】' + topic + '\n' : '') +
+  '【规则】\n' +
+  '1. 我说英文时你用英文自然回应；我明显说中文时，你可以先用中文回应，再顺带给一句地道英文说法。\n' +
+  '2. 像真人一样聊天：有情绪、有节奏、口语化（可以用 well / you know / actually / hmm / oh / gonna / wanna 等），长短句和问句交替，避免书面语和机械腔。\n' +
+  '3. 不主动纠错、不教学、不打断；除非我明确问"这样说对吗 / 怎么说更好"。\n' +
+  '4. 我会一口气说一段话，请等我全部说完再回应。\n' +
+  '5. 每次回复 2-4 句英文，结尾自然地问一句，让对话继续。\n' +
+  '6. 话题随便换，我提什么就聊什么，也可以聊今天发生的事、感受和看法。';
 }
 async function chatRequest(msgs, maxTokens){
   const cfg = state.settings.chat;
@@ -1478,7 +1532,9 @@ async function chatRequestStream(msgs, onDelta){
 function switchView(name){
   $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
   $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === name));
+  if (name === 'main' || name === 'daily') activeChannel = name;
   if (name === 'main') renderMain();
+  if (name === 'daily') renderDaily();
   if (name === 'side') renderSide();
   if (name === 'level') renderLevel();
   if (name === 'history') renderHistory();
@@ -1486,7 +1542,7 @@ function switchView(name){
   window.scrollTo({ top:0 });
 }
 function renderAll(){
-  renderHome(); renderMain(); renderSide(); renderLevel(); renderHistory(); populateSettings();
+  renderHome(); renderMain(); renderDaily(); renderSide(); renderLevel(); renderHistory(); populateSettings();
 }
 
 function renderWeekGrid(el){
@@ -1605,8 +1661,7 @@ function renderMain(){
   $('#summaryCard').classList.toggle('hidden', !r.summary && !r.mainDone);
   if (r.summary) $('#summaryBody').innerHTML = renderText(r.summary);
 
-  const canEnd = r.exchanges >= 3;
-  $('#endHint').textContent = r.mainDone ? '今日已完成' : (canEnd ? '聊得差不多就点结束，老师会给出今日复盘。' : '再多说几句（至少 3 句）后再结束。');
+  $('#endHint').textContent = r.mainDone ? '今日已完成' : '想停随时可以点结束，老师会给出今日复盘。';
   $('#btnCheckin').classList.toggle('hidden', !!r.mainDone);
   $('#btnCheckin').disabled = busy;
   $$('.composer').forEach(el => el.style.display = r.mainDone ? 'none' : '');
@@ -1614,8 +1669,58 @@ function renderMain(){
   $('#micHint').textContent = '按住说话：按住开始录音、松开自动识别并发送；AI 回复流式显示并立即分段朗读。也可以点 ✏️ 打字。';
 }
 
+/* ================= 日常闲聊 ================= */
+function renderDaily(){
+  const msgs = getSession();
+  const box = $('#dailyChatBox');
+  box.innerHTML = '';
+  if (msgs.length === 0){
+    const p = document.createElement('p');
+    p.className = 'hint';
+    p.style.textAlign = 'center';
+    p.textContent = '还没有对话——选一个话题开始，或直接按住说话 / 打字开聊。';
+    box.appendChild(p);
+  }
+  msgs.forEach(m => {
+    const d = document.createElement('div');
+    d.className = 'msg ' + (m.role === 'user' ? 'user' : 'ai');
+    d.innerHTML = renderText(m.text);
+    box.appendChild(d);
+  });
+  box.scrollTop = box.scrollHeight;
+  updateControls();
+  const hint = $('#dailyMicHint');
+  if (hint) hint.textContent = '按住说话：按住开始录音、松开自动识别并发送；AI 回复流式显示并立即分段朗读。也可以点 ✏️ 打字。';
+}
+function renderCurrentChat(){
+  if (activeChannel === 'daily') renderDaily();
+  else renderMain();
+}
+function startDaily(index){
+  const t = (index == null) ? null : DAILY_TOPICS[index];
+  state.dailyChat = { messages:[], topic: t ? t.en : '' };
+  if (t) state.dailyChat.messages.push({ role:'assistant', text:t.opener });
+  else state.dailyChat.messages.push({ role:'assistant', text:'Hey! 👋 Let us just chat — anything on your mind? How was your day?' });
+  save();
+  renderDaily();
+}
+
 /* ================= 主线对话逻辑 ================= */
 let busy = false;
+let activeChannel = 'main';   // 'main'=主线对话（打卡）；'daily'=日常闲聊（不打卡）
+function chatEls(){
+  return activeChannel === 'daily'
+    ? { box:$('#dailyChatBox'), input:$('#dailyInputText'), talk:$('#btnDailyTalk'), send:$('#btnDailySend'), typeBtn:$('#btnDailyType'), backVoice:$('#btnDailyBackVoice') }
+    : { box:$('#chatBox'), input:$('#inputText'), talk:$('#btnTalk'), send:$('#btnSend'), typeBtn:$('#btnType'), backVoice:$('#btnBackVoice') };
+}
+function getSession(){
+  if (activeChannel === 'daily') return state.dailyChat.messages;
+  return ensureRecord().session;
+}
+function getSystemPrompt(){
+  if (activeChannel === 'daily') return DAILY_SYSTEM();
+  return SYSTEM(TOPICS[ensureRecord().topicIdx]);
+}
 function setBusy(b, msg){
   busy = b;
   const box = $('#chatBox');
@@ -1633,11 +1738,15 @@ function setBusy(b, msg){
 }
 /* 只更新按钮状态，不重绘聊天区（流式输出时用） */
 function updateControls(){
-  const r = ensureRecord();
-  $('#btnEndChat').disabled = r.mainDone || r.exchanges < 3 || busy;
-  $('#btnSend').disabled = busy;
-  $('#btnTalk').disabled = busy;
-  $('#btnType').disabled = busy;
+  const el = chatEls();
+  if (el.send) el.send.disabled = busy;
+  if (el.talk) el.talk.disabled = busy;
+  if (el.typeBtn) el.typeBtn.disabled = busy;
+  if (activeChannel === 'main'){
+    const r = ensureRecord();
+    const endBtn = $('#btnEndChat');
+    if (endBtn) endBtn.disabled = r.mainDone || busy;   // 不强制凑够句数，随时可结束
+  }
 }
 function startMain(){
   const r = ensureRecord();
@@ -1656,9 +1765,9 @@ function startMain(){
   }
   switchView('main');
 }
-function buildMsgs(r, mode){
-  const msgs = [{ role:'system', content:SYSTEM(TOPICS[r.topicIdx]) }];
-  r.session.slice(-20).forEach(m => msgs.push({ role:m.role, content:m.text }));
+function buildMsgs(mode){
+  const msgs = [{ role:'system', content:getSystemPrompt() }];
+  getSession().slice(-20).forEach(m => msgs.push({ role:m.role, content:m.text }));
   if (mode === 'summary') msgs.push({ role:'user', content:'我们聊得差不多了，请结束对话，按规则用中文输出【今日复盘】。' });
   return msgs;
 }
@@ -1698,15 +1807,18 @@ async function sendUserText(text){
     switchView('settings');
     return;
   }
-  const r = ensureRecord();
-  if (r.mainDone){ toast('今日主线已完成', 'err'); return; }
-  r.session.push({ role:'user', text:t });
-  r.exchanges++;
+  if (activeChannel === 'main'){
+    const r = ensureRecord();
+    if (r.mainDone){ toast('今日主线已完成', 'err'); return; }
+  }
+  const msgs = getSession();
+  msgs.push({ role:'user', text:t });
+  if (activeChannel === 'main') ensureRecord().exchanges++;
   save();
   busy = true;
   updateControls();
   speechBuffer = '';
-  const box = $('#chatBox');
+  const box = chatEls().box;
   const bub = document.createElement('div');
   bub.className = 'msg ai';
   const span = document.createElement('span');
@@ -1715,7 +1827,7 @@ async function sendUserText(text){
   box.scrollTop = box.scrollHeight;
   let reply = '';
   try {
-    reply = await chatRequestStream(buildMsgs(r, 'continue'), delta => {
+    reply = await chatRequestStream(buildMsgs('continue'), delta => {
       reply += delta;
       span.textContent = reply;          // 流式显示文字
       box.scrollTop = box.scrollHeight;
@@ -1723,7 +1835,7 @@ async function sendUserText(text){
     });
     if (!reply) throw new Error('回复为空');
     if (speechBuffer.trim()){ speakStreamSentence(speechBuffer); speechBuffer = ''; }
-    r.session.push({ role:'assistant', text:reply });
+    msgs.push({ role:'assistant', text:reply });
     save();
   } catch(e){
     if (bub.parentNode) bub.parentNode.removeChild(bub);
@@ -1731,11 +1843,11 @@ async function sendUserText(text){
   } finally {
     busy = false;
     speechBuffer = '';
-    renderMain();
+    renderCurrentChat();
   }
 }
 function sendMessage(){
-  const ta = $('#inputText');
+  const ta = chatEls().input;
   const text = ta.value;
   ta.value = '';
   sendUserText(text);
@@ -1745,7 +1857,7 @@ async function endChat(){
   if (r.mainDone || busy) return;
   setBusy(true, '老师正在整理总结…');
   try {
-    const summary = await chatRequest(buildMsgs(r, 'summary'), 800);
+    const summary = await chatRequest(buildMsgs('summary'), 800);
     r.summary = summary;
     r.session.push({ role:'assistant', text:'📋 ' + summary });
     save();
@@ -2164,10 +2276,10 @@ async function checkMicPermission(){
   } catch(e){ /* 浏览器不支持权限查询时忽略 */ }
 }
 function setMicUI(rec){
-  const b = $('#btnTalk');
-  if (b){
-    b.textContent = rec ? '⏹ 松开结束' : '🎤 按住说话';
-    b.classList.toggle('recording', !!rec);
+  const el = chatEls();
+  if (el.talk){
+    el.talk.textContent = rec ? '⏹ 松开结束' : '🎤 按住说话';
+    el.talk.classList.toggle('recording', !!rec);
   }
   if (!rec && micTarget && micTarget.row != null && repeatState) renderRepeatList();
 }
@@ -2183,8 +2295,10 @@ function putTranscript(text){
 /* 主线：按住说话 */
 function startTalk(){
   if (busy){ toast('老师正在输入，请稍等', 'err'); return; }
-  const r = ensureRecord();
-  if (r.mainDone){ toast('今日主线已完成', 'err'); return; }
+  if (activeChannel === 'main'){
+    const r = ensureRecord();
+    if (r.mainDone){ toast('今日主线已完成', 'err'); return; }
+  }
   if (capture) return;
   micTarget = null;
   setMicUI(true);
@@ -2427,6 +2541,7 @@ function showHelp(){
   showModal('使用说明', 
     '<ul>' +
     '<li><b>主线（实时口语对话）</b>：AI 先抛出今日话题，你按住"按住说话"说一句、松开自动识别并发送，AI 回一句并自动朗读，像微信聊天一样。聊完点"结束本次对话"，AI 生成【今日复盘】（你说 → 更好地说 → 为什么）。完成主线即打卡成功、+60 进度。</li>' +
+    '<li><b>日常对话</b>：顶栏"日常对话"是随意聊天模式，不打卡、不纠错、不教学，像和朋友聊天，按住说话或打字都行。</li>' +
     '<li><b>支线任务</b>（单词卡 / 听读 / 跟读）是加分项：每条 +25 进度，不做不掉段、不算断签，可"稍后完成"当天补做。</li>' +
     '<li><b>段位</b>：A0-1 → C2-3，每小阶需 100 进度；连续 3 天未完成主线会掉 1 小阶。</li>' +
     '<li><b>纠错方式</b>：AI 老师优先挑"不地道"的表达，按"你说 → 更好地说 → 为什么"指出 1-3 点，不苛责小语法。</li>' +
@@ -2490,6 +2605,36 @@ function init(){
     $('#typeMode').classList.add('hidden');
     $('#voiceMode').classList.remove('hidden');
   };
+  // 日常对话：同样支持按住说话与打字
+  const talkDaily = $('#btnDailyTalk');
+  talkDaily.addEventListener('pointerdown', e => { e.preventDefault(); startTalk(); });
+  talkDaily.addEventListener('pointerup', e => { e.preventDefault(); stopTalk(); });
+  talkDaily.addEventListener('pointerleave', () => stopTalk());
+  talkDaily.addEventListener('pointercancel', () => stopTalk());
+  talkDaily.addEventListener('contextmenu', e => e.preventDefault());
+  $('#btnDailyType').onclick = () => {
+    $('#dailyVoiceMode').classList.add('hidden');
+    $('#dailyTypeMode').classList.remove('hidden');
+    $('#dailyInputText').focus();
+  };
+  $('#btnDailyBackVoice').onclick = () => {
+    $('#dailyTypeMode').classList.add('hidden');
+    $('#dailyVoiceMode').classList.remove('hidden');
+  };
+  $('#btnDailySend').onclick = sendMessage;
+  $('#dailyInputText').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+  });
+  $('#btnDailyNew').onclick = () => startDaily(null);
+  // 日常对话：话题快速入口
+  const dt = $('#dailyTopics'); dt.innerHTML = '';
+  DAILY_TOPICS.forEach((t, i) => {
+    const b = document.createElement('button');
+    b.className = 'btn small ghost';
+    b.textContent = t.en;
+    b.onclick = () => startDaily(i);
+    dt.appendChild(b);
+  });
   $('#btnEndChat').onclick = endChat;
   $('#btnCheckin').onclick = completeMain;
 
