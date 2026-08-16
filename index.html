@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="app-version" content="1.0.2">
+<title>英语口语工作台 · 影子英语老师</title>
+<style>
+/* ================= 基础变量与主题（深色 · 克制的高级感） ================= */
+:root{
+  --bg:#0b0e13; --panel:#10141c; --card:#161b25; --card-hi:#1c2331;
+  --line:#263041; --line-soft:#202836;
+  --text:#e9e7e0; --muted:#98a2b3; --dim:#5f6b7d;
+  --gold:#d3a85c; --gold-soft:#8a6d3b; --gold-deep:#a97f3d;
+  --green:#79b98a; --red:#d97878; --blue:#7ba7d9;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  background:
+    radial-gradient(1000px 500px at 80% -10%, rgba(211,168,92,.06), transparent 60%),
+    radial-gradient(800px 400px at -10% 110%, rgba(123,167,217,.05), transparent 60%),
+    var(--bg);
+  color:var(--text); min-height:100vh; line-height:1.5;
+}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{
+  font:inherit;background:var(--card-hi);border:1px solid var(--line);
+  color:var(--text);border-radius:9px;padding:9px 11px;width:100%;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--gold-soft)}
+textarea{resize:vertical;min-height:62px}
+h1,h2,h3{font-weight:600}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+.hint{color:var(--muted);font-size:12.5px;line-height:1.6;margin-top:6px}
+.pre{white-space:pre-wrap;line-height:1.7;font-size:13.5px;color:var(--muted);word-break:break-word}
+
+/* ================= 按钮 ================= */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:9px 15px;border-radius:10px;background:var(--card-hi);
+  border:1px solid var(--line);font-size:13.5px;transition:.15s;white-space:nowrap;
+}
+.btn:hover{border-color:var(--gold-soft)}
+.btn.primary{
+  background:linear-gradient(135deg,#cf9f4d,#b9873a);color:#191207;font-weight:600;border:none;
+}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--red);border-color:rgba(217,120,120,.35)}
+.btn.danger:hover{border-color:var(--red)}
+.btn.mini{padding:4px 10px;font-size:12px;border-radius:8px}
+.btn.small{padding:6px 11px;font-size:12.5px}
+.btn.wide{width:100%;margin-top:10px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ================= 顶栏与导航 ================= */
+.topbar{
+  position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  padding:13px 20px;background:rgba(11,14,19,.88);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{
+  width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#c99b4d,#8a6d3b);color:#171005;font-weight:800;font-size:15px;letter-spacing:.02em;
+  box-shadow:0 2px 12px rgba(211,168,92,.25);
+}
+.brand .title{font-size:15px;font-weight:600}
+.brand .subtitle{font-size:11px;color:var(--muted)}
+.top-actions{display:flex;gap:8px}
+.tabs{
+  display:flex;gap:4px;padding:9px 20px;overflow-x:auto;background:var(--panel);
+  border-bottom:1px solid var(--line);scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:8px 15px;border-radius:9px;color:var(--muted);font-size:13.5px;white-space:nowrap}
+.tab.active{background:rgba(211,168,92,.12);color:var(--gold)}
+
+/* ================= 布局与卡片 ================= */
+main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
+.view{display:none;animation:fade .2s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px;box-shadow:0 1px 0 rgba(255,255,255,.02);
+}
+.card h3{font-size:13.5px;color:var(--muted);font-weight:600;letter-spacing:.04em;margin-bottom:10px}
+.grid2{display:grid;gap:14px;grid-template-columns:1fr;margin-top:14px}
+.grid3{display:grid;gap:14px;grid-template-columns:1fr;margin-top:14px}
+@media(min-width:820px){
+  .grid2{grid-template-columns:1fr 1fr}
+  .grid3{grid-template-columns:repeat(3,1fr)}
+}
+.tag{
+  display:inline-block;font-size:11px;padding:2px 9px;border-radius:99px;vertical-align:middle;
+  background:rgba(122,128,140,.12);color:var(--muted);border:1px solid var(--line);
+}
+.tag.done{background:rgba(121,185,138,.12);color:var(--green);border-color:rgba(121,185,138,.35)}
+.tag.pending{background:rgba(211,168,92,.1);color:var(--gold);border-color:rgba(211,168,92,.3)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+/* ================= 首页 ================= */
+.hero{margin:4px 0 16px}
+.date-line{font-size:12.5px;color:var(--dim);letter-spacing:.04em}
+.hero-title{font-size:25px;margin:6px 0 4px;letter-spacing:.01em}
+.hero-sub{font-size:13px;color:var(--muted)}
+.hero-sub b{color:var(--gold);font-size:15px}
+.notice{
+  background:rgba(211,168,92,.08);border:1px solid rgba(211,168,92,.32);color:var(--gold);
+  border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;line-height:1.6;
+}
+.notice.good{background:rgba(121,185,138,.08);border-color:rgba(121,185,138,.32);color:var(--green)}
+.modes{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
+.mode-btn{
+  background:var(--card-hi);border:1px solid var(--line);border-radius:11px;padding:11px;
+  display:flex;flex-direction:column;gap:2px;text-align:left;transition:.15s;
+}
+.mode-btn:hover{border-color:var(--gold-soft)}
+.mode-btn b{font-size:14px}
+.mode-btn span{font-size:11px;color:var(--muted);line-height:1.4}
+.mode-btn.active{border-color:var(--gold);background:rgba(211,168,92,.08)}
+.mode-btn.active b{color:var(--gold)}
+.topic-line{font-size:15px;margin:4px 0 8px}
+.status{font-size:13px;color:var(--muted)}
+.status.done{color:var(--green)}
+.lv-row{display:flex;gap:16px;align-items:center}
+.lv-info{flex:1;min-width:0}
+.lv-name{font-size:19px;font-weight:700;margin-bottom:8px}
+.badge{
+  width:96px;height:96px;border-radius:50%;flex-shrink:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:radial-gradient(circle at 35% 28%,#3d3a2d,#181c14);
+  border:2px solid var(--gold);box-shadow:0 0 26px rgba(211,168,92,.16), inset 0 0 18px rgba(211,168,92,.05);
+}
+.badge .big{font-size:32px;font-weight:800;color:var(--gold);line-height:1}
+.badge .sub{font-size:12px;color:var(--muted);margin-top:3px}
+.badge.big-badge{width:118px;height:118px}
+.badge.big-badge .big{font-size:40px}
+.bar{height:8px;background:#232b3a;border-radius:99px;overflow:hidden;margin:8px 0}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#a97f3d,#e0b567);border-radius:99px;transition:width .45s ease}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0 8px}
+.wcell{
+  aspect-ratio:1;border-radius:10px;background:var(--card-hi);border:1px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--dim);
+}
+.wcell b{font-size:13px;color:var(--text);font-weight:600}
+.wcell.done{border-color:rgba(121,185,138,.45);background:rgba(121,185,138,.08)}
+.wcell.done b{color:var(--green)}
+.wcell.miss{border-color:rgba(217,120,120,.35);background:rgba(217,120,120,.06)}
+.wcell.miss b{color:var(--red)}
+.wcell.today{outline:1px solid var(--gold)}
+.risk{color:var(--red);font-size:12.5px;line-height:1.6}
+.risk.ok{color:var(--green)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.chip{
+  padding:4px 11px;border-radius:99px;background:var(--card-hi);border:1px solid var(--line);
+  font-size:12px;color:var(--muted);
+}
+.chip.done{color:var(--green);border-color:rgba(121,185,138,.35)}
+.p1-grid{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.p1-chip{
+  background:var(--card-hi);border:1px dashed var(--line);border-radius:11px;padding:11px;
+  text-align:left;color:var(--muted);transition:.15s;font-size:12px;line-height:1.5;
+}
+.p1-chip:hover{border-color:var(--gold-soft);color:var(--text)}
+.p1-chip b{display:block;color:var(--text);font-size:13.5px;margin-bottom:3px}
+
+/* ================= 主线对话 ================= */
+.main-head h2{font-size:19px;margin-bottom:8px}
+.chat{
+  display:flex;flex-direction:column;gap:10px;max-height:52vh;min-height:180px;
+  overflow-y:auto;margin-top:14px;padding:16px;scroll-behavior:smooth;
+}
+.msg{
+  max-width:86%;padding:11px 14px;border-radius:14px;line-height:1.6;
+  word-break:break-word;font-size:14.5px;white-space:pre-wrap;
+}
+.msg.user{align-self:flex-end;background:linear-gradient(135deg,#2b3142,#232a3b);border:1px solid #384158;border-bottom-right-radius:4px}
+.msg.ai{align-self:flex-start;background:var(--card-hi);border:1px solid var(--line);border-bottom-left-radius:4px}
+.typing{opacity:.55;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.composer{margin-top:14px}
+.composer-row{display:flex;gap:8px;align-items:stretch}
+.composer-row textarea{flex:1}
+.composer-row .btn{min-width:64px}
+.end-row{justify-content:flex-end;align-items:center;margin-top:10px;gap:10px;flex-wrap:wrap}
+
+/* ================= 支线 ================= */
+.side-item{display:flex;flex-direction:column}
+.side-item .hint{flex:1}
+.word-box{margin:8px 0}
+.word-front{
+  font-size:26px;font-weight:700;text-align:center;padding:20px 10px;letter-spacing:.02em;
+  background:var(--card-hi);border:1px solid var(--line);border-radius:12px;
+}
+.word-back{
+  background:var(--card-hi);border:1px solid var(--line);border-radius:12px;padding:14px;
+  font-size:13.5px;line-height:1.7;
+}
+.word-back .phon{color:var(--gold);font-size:13px}
+.word-back .ex{color:var(--text);margin-top:8px}
+.word-back .exZh{color:var(--muted);font-size:12px;margin-top:2px}
+.word-controls{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.passage-title{font-size:14px;font-weight:600;color:var(--gold);margin:8px 0 6px}
+.passage{
+  font-size:13.5px;line-height:1.75;color:var(--muted);max-height:230px;overflow-y:auto;
+  background:var(--card-hi);border:1px solid var(--line);border-radius:11px;padding:12px;
+  white-space:pre-wrap;
+}
+.rep-row{padding:10px 0;border-bottom:1px dashed var(--line-soft)}
+.rep-row:last-child{border-bottom:none}
+.rep-en{font-size:14.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rep-zh{color:var(--muted);font-size:12px;margin:2px 0 6px}
+.rep-mic{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.rep-result{color:var(--green);font-size:12px;line-height:1.5}
+
+/* ================= 段位 / 记录 / 设置 ================= */
+.lv-hero{display:flex;gap:20px;align-items:center;margin-top:4px;flex-wrap:wrap}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;text-align:center}
+.stat b{font-size:24px;color:var(--gold);display:block}
+.stat span{font-size:12px;color:var(--muted)}
+.sum-card{padding:12px 0;border-bottom:1px dashed var(--line-soft)}
+.sum-card:last-child{border-bottom:none}
+.sum-date{font-size:12px;color:var(--gold);margin-bottom:4px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--muted);margin:8px 0;line-height:1.5}
+.check input{width:auto;margin-top:2px}
+.test-result{font-size:12.5px;margin-top:10px;line-height:1.6;color:var(--muted)}
+.test-result.ok{color:var(--green)}
+.test-result.err{color:var(--red)}
+.note{
+  background:rgba(123,167,217,.06);border:1px solid rgba(123,167,217,.22);color:var(--muted);
+  border-radius:9px;padding:9px 12px;font-size:12px;line-height:1.6;margin-top:10px;
+}
+
+/* ================= 弹窗与提示 ================= */
+.mask{
+  position:fixed;inset:0;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;
+  z-index:60;padding:20px;backdrop-filter:blur(2px);
+}
+.modal{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;max-width:560px;width:100%;
+  max-height:80vh;overflow-y:auto;padding:22px;
+}
+.modal h3{margin-bottom:12px;font-size:16px}
+.modal ul{margin:8px 0;padding-left:20px}
+.modal li{margin:7px 0;line-height:1.7;font-size:13.5px;color:var(--muted)}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+#toast{
+  position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(8px);z-index:80;
+  background:rgba(28,35,49,.96);border:1px solid var(--line);color:var(--text);
+  padding:10px 18px;border-radius:99px;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.4);
+  opacity:0;pointer-events:none;transition:.25s;max-width:88vw;text-align:center;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.err{color:var(--red);border-color:rgba(217,120,120,.4)}
+
+/* ================= 移动端 ================= */
+@media(max-width:680px){
+  .tabs{
+    position:fixed;bottom:0;left:0;right:0;z-index:40;justify-content:space-around;
+    background:rgba(16,20,28,.97);border-top:1px solid var(--line);border-bottom:none;padding:8px 6px;
+    backdrop-filter:blur(10px);
+  }
+  .tab{font-size:12px;padding:8px 6px;flex:1;text-align:center}
+  main{padding-bottom:86px}
+  .hero-title{font-size:22px}
+  .composer-row{flex-wrap:wrap}
+  .composer-row textarea{min-width:100%;order:-1}
+  #toast{bottom:80px}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= 顶栏 ================= -->
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">EN</div>
+    <div>
+      <div class="title">英语口语工作台</div>
+      <div class="subtitle">影子英语老师 · 只和昨天的自己比</div>
+    </div>
+  </div>
+  <div class="top-actions">
+    <button class="btn" id="btnHelp">使用说明</button>
+    <button class="btn" id="btnSettings">设置</button>
+  </div>
+</header>
+
+<!-- ================= 导航 ================= -->
+<nav class="tabs">
+  <button class="tab active" data-view="home">首页</button>
+  <button class="tab" data-view="main">主线对话</button>
+  <button class="tab" data-view="side">支线任务</button>
+  <button class="tab" data-view="level">我的段位</button>
+  <button class="tab" data-view="history">打卡记录</button>
+</nav>
+
+<main>
+
+  <!-- ================= 首页 ================= -->
+  <section class="view active" id="view-home">
+    <div class="hero">
+      <div class="date-line" id="homeDate"></div>
+      <h1 class="hero-title">今天的英文，今天开口</h1>
+      <p class="hero-sub" id="countdownText"></p>
+    </div>
+    <div id="noticeBanner" class="notice hidden"></div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>今日模式</h3>
+        <div class="modes">
+          <button class="mode-btn" data-mode="quick"><b>快速</b><span>约 15 分钟 · 只做主线</span></button>
+          <button class="mode-btn" data-mode="standard"><b>标准</b><span>约 25 分钟 · 主线 + 1 条支线</span></button>
+          <button class="mode-btn" data-mode="immersion"><b>沉浸</b><span>约 40 分钟 · 主线 + 多条支线</span></button>
+        </div>
+        <p class="hint">主线是唯一打卡任务；支线只加分，不做也不掉段。</p>
+      </div>
+
+      <div class="card">
+        <h3>主线任务 · 口语对话</h3>
+        <div class="topic-line">今日话题：<b id="homeTopic"></b></div>
+        <div id="mainStatusText" class="status"></div>
+        <button id="btnStartMain" class="btn primary wide">开始主线对话</button>
+      </div>
+
+      <div class="card">
+        <h3>当前段位</h3>
+        <div class="lv-row">
+          <div class="badge">
+            <span class="big" id="homeBadgeBig"></span>
+            <span class="sub" id="homeBadgeSub"></span>
+          </div>
+          <div class="lv-info">
+            <div id="homeLevelName" class="lv-name"></div>
+            <div class="bar"><i id="homeBar" style="width:0%"></i></div>
+            <div id="homeBarText" class="muted small"></div>
+            <div id="homeNextText" class="small"></div>
+          </div>
+        </div>
+        <button id="btnGoLevel" class="btn ghost small">查看段位规则</button>
+      </div>
+
+      <div class="card">
+        <h3>打卡记录</h3>
+        <div id="streakText" class="lv-name"></div>
+        <div id="weekGrid" class="week"></div>
+        <div id="riskText" class="risk ok"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3>支线任务 · 可选加分项</h3>
+      <div id="sideSummary" class="hint"></div>
+      <div class="chips" id="sideChips"></div>
+      <div class="row">
+        <button id="btnGoSide" class="btn ghost">进入支线</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3>P1 规划中 <span class="tag">第二版上线</span></h3>
+      <div class="p1-grid" id="p1Grid"></div>
+    </div>
+  </section>
+
+  <!-- ================= 主线对话页 ================= -->
+  <section class="view" id="view-main">
+    <div class="main-head">
+      <h2>主线 · 今日口语对话</h2>
+      <div class="topic-line" id="mainTopicTitle"></div>
+      <p class="hint" id="mainScene"></p>
+      <div id="mainDoneBanner" class="notice good hidden" style="margin-top:10px">✅ 今日主线已完成，打卡成功</div>
+    </div>
+
+    <div id="summaryCard" class="card hidden" style="margin-top:14px">
+      <h3>📋 本次对话总结</h3>
+      <div id="summaryBody" class="pre"></div>
+      <button id="btnCheckin" class="btn primary wide">完成主线 · 今日打卡</button>
+    </div>
+
+    <div class="chat card" id="chatBox"></div>
+
+    <div class="composer card">
+      <div class="composer-row">
+        <button id="btnMic" class="btn">🎤 语音</button>
+        <textarea id="inputText" placeholder="用英文说点什么…（语音失败时请打字）"></textarea>
+        <button id="btnSend" class="btn primary">发送</button>
+      </div>
+      <div id="micHint" class="hint small"></div>
+      <div class="composer-row end-row">
+        <span id="endHint" class="hint small"></span>
+        <button id="btnEndChat" class="btn" disabled>结束对话，让老师总结</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 支线任务页 ================= -->
+  <section class="view" id="view-side">
+    <h2 style="font-size:19px">支线任务 · 可选加分</h2>
+    <p class="hint">支线每完成一条额外 +进度，不影响打卡、不算断签。可以"稍后完成"，当天内回来做即可。</p>
+
+    <div class="grid3">
+      <div class="card side-item">
+        <h3>📇 单词卡片 <span class="tag" id="cardsDone">未完成</span></h3>
+        <p class="hint">约 5 分钟 · 睡前友好</p>
+        <div class="word-box">
+          <div class="word-front" id="wordFront"></div>
+          <div class="word-back hidden" id="wordBack"></div>
+          <div class="word-controls">
+            <button id="btnFlipWord" class="btn small ghost">显示答案</button>
+            <button id="btnWordKnow" class="btn small">认识 ✓</button>
+            <button id="btnWordDunno" class="btn small">还不太熟</button>
+          </div>
+          <div id="wordProgress" class="hint small" style="text-align:center"></div>
+        </div>
+        <button id="btnFinishCards" class="btn primary wide hidden">完成本组并加分</button>
+        <div class="row"><button id="deferCards" class="btn ghost small">稍后完成</button></div>
+      </div>
+
+      <div class="card side-item">
+        <h3>📖 听读输入 <span class="tag" id="inputDone">未完成</span></h3>
+        <p class="hint">5-10 分钟 · 默读或朗读均可</p>
+        <div id="passageTitle" class="passage-title"></div>
+        <div id="passageBody" class="passage"></div>
+        <div class="row">
+          <button id="btnReadPassage" class="btn small">▶ 听全文</button>
+          <button id="btnFinishInput" class="btn primary small">我读完了</button>
+          <button id="deferInput" class="btn ghost small">稍后完成</button>
+        </div>
+      </div>
+
+      <div class="card side-item">
+        <h3>🔁 跟读练习 <span class="tag" id="repeatDone">未完成</span></h3>
+        <p class="hint">约 5 分钟 · 先听老师读，再跟读</p>
+        <div id="repeatList"></div>
+        <button id="btnFinishRepeat" class="btn primary wide" disabled>我练好了，完成支线</button>
+        <div class="row"><button id="deferRepeat" class="btn ghost small">稍后完成</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 段位页 ================= -->
+  <section class="view" id="view-level">
+    <div class="lv-hero card">
+      <div class="badge big-badge">
+        <span class="big" id="lvBig"></span>
+        <span class="sub" id="lvSub"></span>
+      </div>
+      <div class="lv-info">
+        <div id="lvName" class="lv-name"></div>
+        <div id="lvDesc" class="hint"></div>
+        <div class="bar"><i id="lvBar" style="width:0%"></i></div>
+        <div id="lvBarText" class="muted small"></div>
+        <div id="lvNext" class="small"></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>段位规则</h3>
+        <div id="lvRules" class="pre"></div>
+      </div>
+      <div class="card">
+        <h3>段位历程</h3>
+        <div id="lvHistoryList" class="pre"></div>
+        <div class="row"><button id="btnGoSelfCheck" class="btn ghost small">调整初始自评</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 打卡记录页 ================= -->
+  <section class="view" id="view-history">
+    <h2 style="font-size:19px">打卡记录</h2>
+    <div class="stat-row">
+      <div class="stat"><b id="histStreak">0</b><span>连续天数</span></div>
+      <div class="stat"><b id="histTotal">0</b><span>累计天数</span></div>
+      <div class="stat"><b id="histWeek">0</b><span>本周完成</span></div>
+    </div>
+    <div class="card">
+      <h3>本周打卡</h3>
+      <div id="histWeekGrid" class="week"></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>近期对话总结</h3>
+      <div id="histSummaries"></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>统计报表 <span class="tag">P1 规划中</span></h3>
+      <p class="hint">本周 vs 上周对比、复习曲线等统计将在第二版上线。</p>
+      <div class="row"><button id="btnP1Report" class="btn ghost small">查看说明</button></div>
+    </div>
+  </section>
+
+  <!-- ================= 设置页 ================= -->
+  <section class="view" id="view-settings">
+    <h2 style="font-size:19px">设置</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>AI 对话 · DeepSeek</h3>
+        <div class="field"><label>Base URL</label><input id="setChatBase" placeholder="https://api.deepseek.com"></div>
+        <div class="field"><label>API Key</label><input id="setChatKey" type="password" placeholder="sk-..."></div>
+        <div class="field">
+          <label>模型</label>
+          <input id="setChatModel" list="chatModels" placeholder="deepseek-chat">
+          <datalist id="chatModels">
+            <option value="deepseek-chat"></option>
+            <option value="deepseek-reasoner"></option>
+            <option value="deepseek-v4-flash"></option>
+          </datalist>
+        </div>
+        <button id="btnTestChat" class="btn">测试连接</button>
+        <div id="chatTestResult" class="test-result"></div>
+      </div>
+
+      <div class="card">
+        <h3>语音服务 · Qwen</h3>
+        <div class="field"><label>Base URL</label><input id="setVoiceBase" placeholder="https://dashscope.aliyuncs.com/compatible-mode/v1"></div>
+        <div class="field"><label>API Key（首次使用请粘贴你的免费 key，仅保存本机）</label><input id="setVoiceKey" type="password" placeholder="sk-..."></div>
+        <div class="field"><label>模型</label><input id="setVoiceModel" placeholder="qwen3-tts-vd-2026-01-26"></div>
+        <div class="field"><label>发音人 voice（按服务商要求填）</label><input id="setVoiceName" placeholder="Cherry / default"></div>
+        <div class="check"><input type="checkbox" id="chkQwenASR"><label for="chkQwenASR">优先用 Qwen 语音识别（失败或不支持则改用打字）</label></div>
+        <div class="check"><input type="checkbox" id="chkQwenTTS"><label for="chkQwenTTS">优先用 Qwen 朗读（失败自动回退浏览器发音）</label></div>
+        <div class="row">
+          <button id="btnTestVoice" class="btn">测试朗读</button>
+          <button id="btnResetVoice" class="btn ghost small">恢复默认</button>
+        </div>
+        <div id="voiceTestResult" class="test-result"></div>
+        <div class="note">语音识别走 /audio/transcriptions、朗读走 /audio/speech（OpenAI 兼容接口）。若没声音或转写失败，通常是接口跨域 / key 无效 / 服务商格式不同，App 会自动回退浏览器自带语音，不影响使用。</div>
+      </div>
+
+      <div class="card">
+        <h3>学习设置</h3>
+        <div class="field"><label>出发日期（美国之行）</label><input id="setDeparture" type="date"></div>
+        <div class="field">
+          <label>初始段位（自评，可随时调整）</label>
+          <select id="setLevel"></select>
+        </div>
+        <div class="grid2" style="grid-template-columns:1fr 1fr;gap:10px;margin-top:0">
+          <div class="field"><label>主线 +进度</label><input id="setPtsMain" type="number" min="1"></div>
+          <div class="field"><label>支线 +进度</label><input id="setPtsSide" type="number" min="1"></div>
+          <div class="field"><label>每小阶所需进度</label><input id="setPtsLevel" type="number" min="1"></div>
+          <div class="field"><label>掉段：连续缺席天数</label><input id="setDropAfter" type="number" min="1"></div>
+        </div>
+        <button id="btnSaveSettings" class="btn primary wide">保存设置</button>
+      </div>
+
+      <div class="card">
+        <h3>数据管理</h3>
+        <p class="hint">全部数据只存在本机浏览器 localStorage，可随时导出备份到本地文件。</p>
+        <div class="row">
+          <button id="btnExport" class="btn">导出备份</button>
+          <label class="btn" for="fileImport">导入备份</label>
+          <input type="file" id="fileImport" class="hidden" accept=".json">
+        </div>
+        <div class="row"><button id="btnResetAll" class="btn danger">清空所有数据</button></div>
+        <div class="note">安全提醒：语音 key 不会写入文件，只在你自己设备的浏览器里保存；即使仓库公开部署，别人也看不到你的 key。</div>
+      </div>
+
+      <div class="card">
+        <h3>关于与更新</h3>
+        <p class="hint" id="aboutVersion"></p>
+        <div class="row"><button id="btnCheckUpdate" class="btn">检查更新</button></div>
+        <div id="updateResult" class="test-result"></div>
+        <div class="note">手机访问：把本文件部署到静态托管（如 GitHub Pages）后，手机打开链接即可使用。以后我推送新版后，手机打开页面会自动检测并刷新到新版，无需手动操作。打卡数据保存在各设备本地，跨设备请用"导出/导入备份"。</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= 弹窗与提示 ================= -->
+<div id="modalMask" class="mask hidden">
+  <div class="modal">
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody" class="pre"></div>
+    <div class="modal-actions" id="modalActions"></div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ================= 内容库（可自行扩充） ================= */
+const LS_KEY = 'oralWorkbench_v1';
+const LEVELS = [];
+['A0','A1','A2','B1','B2','C1','C2'].forEach(g => { for (let s = 1; s <= 3; s++) LEVELS.push(g + '-' + s); });
+const LEVEL_DESC = {
+  A0:'零基础 · 刚开始接触英语', A1:'能进行最简单日常交流', A2:'能应付常见生活场景',
+  B1:'能较流利表达日常想法', B2:'能自信讨论大多数话题', C1:'接近母语者的流畅自然', C2:'完全自如表达'
+};
+const WEEK_CN = ['日','一','二','三','四','五','六'];
+
+const MODES = {
+  quick:    { name:'快速模式', time:'约 15 分钟', desc:'只做主线，适合很忙的日子' },
+  standard: { name:'标准模式', time:'约 25 分钟', desc:'主线 + 1 条支线' },
+  immersion:{ name:'沉浸模式', time:'约 40 分钟', desc:'主线 + 多条支线，适合时间充裕' }
+};
+const SIDE_NAMES = { cards:'单词卡片', input:'听读输入', repeat:'跟读练习' };
+const APP_VERSION = (document.querySelector('meta[name="app-version"]') || {}).content || '1.0.0';
+
+const P1 = [
+  { icon:'✈️', name:'旅行场景冲刺', desc:'机场 / 餐厅 / 做客等场景专项' },
+  { icon:'📚', name:'生词本', desc:'粘贴字幕文章，AI 拆解生词' },
+  { icon:'📝', name:'错题本', desc:'每日复习高频错误' },
+  { icon:'📊', name:'统计报表', desc:'本周 vs 上周对比' }
+];
+
+/* 今日话题库 */
+const TOPICS = [
+  { en:'Airport check-in', zh:'机场值机与登机', scene:'你要从国内出发去美国，现在在值机柜台。', starter:'Excuse me, where is the check-in counter for the flight to Los Angeles?' },
+  { en:'Ordering coffee', zh:'咖啡店点单', scene:'你走进一家咖啡店，想点一杯咖啡。', starter:'Hi, could I get a medium latte to go, please?' },
+  { en:'Dinner at a restaurant', zh:'餐厅点菜与结账', scene:'和朋友在美式餐厅吃饭，需要点菜、加菜、结账。', starter:'Could we have a menu, please?' },
+  { en:'Grocery shopping', zh:'超市采购', scene:'你在美国超市采购生活用品和食物。', starter:'Excuse me, where can I find the milk section?' },
+  { en:'Asking for directions', zh:'街头问路', scene:'你在陌生城市迷路了，需要问路。', starter:'Excuse me, how do I get to the nearest subway station?' },
+  { en:'Small talk with a stranger', zh:'和陌生人寒暄', scene:'排队或等车时，和一个陌生人搭话。', starter:'Beautiful day, is not it?' },
+  { en:'Hotel check-in', zh:'酒店入住', scene:'你到达美国酒店，办理入住。', starter:'Hi, I have a reservation under the name Chen.' },
+  { en:'At the pharmacy', zh:'药房买药', scene:'你有点不舒服，去药房买药。', starter:'Excuse me, do you have something for a sore throat?' },
+  { en:'Seeing a doctor', zh:'看医生', scene:'你预约了医生，描述自己的症状。', starter:'Hi doctor, I have been having a headache for two days.' },
+  { en:'Taking public transit', zh:'坐公交地铁', scene:'你在研究怎么坐公交或地铁去目的地。', starter:'Which train should I take to downtown?' },
+  { en:'Making new friends', zh:'认识新朋友', scene:'在语言角或活动中认识一个外国人。', starter:'Hi, I am Chen. Nice to meet you! Where are you from?' },
+  { en:'Weekend plans', zh:'聊周末计划', scene:'和朋友聊这个周末打算做什么。', starter:'Do you have any plans for the weekend?' },
+  { en:'Talking about the weather', zh:'聊天气', scene:'和同事或朋友聊当地天气。', starter:'The weather here is so different from my hometown.' },
+  { en:'Ordering takeout', zh:'点外卖', scene:'你打电话或在 App 上点外卖。', starter:'Hi, I would like to order a chicken burger and fries, please.' },
+  { en:'Returning an item', zh:'退货换货', scene:'你买的东西不合适，去商店退货。', starter:'Hi, I would like to return this shirt. I bought it yesterday.' },
+  { en:'At the bank', zh:'银行办业务', scene:'你在美国银行开户或办理业务。', starter:'Hi, I would like to open a bank account, please.' },
+  { en:'Sending a package', zh:'寄快递', scene:'你要去邮局或快递点寄一个包裹回国。', starter:'Hi, I would like to send this package to China, please.' },
+  { en:'Talking about movies', zh:'聊电影', scene:'和朋友聊最近看的电影。', starter:'Have you seen any good movies lately?' },
+  { en:'Talking about hobbies', zh:'聊爱好', scene:'和新认识的朋友聊各自的爱好。', starter:'What do you like to do in your free time?' },
+  { en:'Talking about food', zh:'聊食物与饮食', scene:'聊家乡菜和饮食习惯。', starter:'What is your favorite food? Mine is hot pot.' },
+  { en:'Using a maps app', zh:'用地图导航出行', scene:'你用手机导航去一个地方，路上需要确认路线。', starter:'It says turn left in 200 meters. Is that right?' },
+  { en:'At the gym', zh:'健身房', scene:'你在健身房问器材怎么用或约课。', starter:'Excuse me, how do I use this machine?' },
+  { en:'Talking about travel plans', zh:'聊旅行计划', scene:'和朋友聊未来的旅行安排。', starter:'I am planning a trip to the US next year.' },
+  { en:'Chatting about family', zh:'聊家人', scene:'和新朋友聊自己的家庭。', starter:'Do you have any brothers or sisters?' }
+];
+
+/* 生词卡库 */
+const WORDS = [
+  { w:'grab', p:'/ɡræb/', zh:'顺手拿 / 快速取', ex:'Let me grab a coffee before we leave.', exZh:'走之前我顺手买杯咖啡。' },
+  { w:'hang out', p:'/hæŋ aʊt/', zh:'闲逛 / 一起玩', ex:'We usually hang out at the mall on weekends.', exZh:'我们周末常在商场一起玩。' },
+  { w:'catch up', p:'/kætʃ ʌp/', zh:'叙旧 / 聊近况', ex:'Let us catch up over lunch sometime.', exZh:'改天吃午饭时聊聊近况吧。' },
+  { w:'rain check', p:'/reɪn tʃek/', zh:'改天再约', ex:'I cannot make it tonight. Can I take a rain check?', exZh:'今晚去不了，能改天再约吗？' },
+  { w:'run into', p:'/rʌn ˈɪntuː/', zh:'偶遇', ex:'I ran into an old friend at the airport.', exZh:'我在机场偶遇一位老朋友。' },
+  { w:'look forward to', p:'/lʊk ˈfɔːrwərd tuː/', zh:'期待', ex:'I look forward to seeing you in New York.', exZh:'期待在纽约见到你。' },
+  { w:'make up one’s mind', p:'/meɪk ʌp wʌnz maɪnd/', zh:'拿定主意', ex:'I cannot make up my mind between the two.', exZh:'这两个我拿不定主意。' },
+  { w:'hit the road', p:'/hɪt ðə roʊd/', zh:'出发 / 上路', ex:'We should hit the road before rush hour.', exZh:'我们得赶在高峰前出发。' },
+  { w:'in a nutshell', p:'/ɪn ə ˈnʌtʃel/', zh:'简而言之', ex:'In a nutshell, the plan is solid.', exZh:'简而言之，计划很扎实。' },
+  { w:'get the hang of', p:'/ɡet ðə hæŋ əv/', zh:'上手 / 掌握诀窍', ex:'You will get the hang of it in a few days.', exZh:'你几天就能上手。' },
+  { w:'carry-on', p:'/ˈkæri ɒn/', zh:'随身行李', ex:'I only brought a carry-on.', exZh:'我只带了一件随身行李。' },
+  { w:'boarding pass', p:'/ˈbɔːrdɪŋ pæs/', zh:'登机牌', ex:'Please have your boarding pass ready.', exZh:'请准备好登机牌。' },
+  { w:'aisle seat', p:'/aɪl siːt/', zh:'靠过道的座位', ex:'I would prefer an aisle seat.', exZh:'我更喜欢靠过道的座位。' },
+  { w:'baggage claim', p:'/ˈbæɡɪdʒ kleɪm/', zh:'行李提取处', ex:'Let us meet at baggage claim.', exZh:'我们在行李提取处见。' },
+  { w:'receipt', p:'/rɪˈsiːt/', zh:'收据', ex:'Could I get a receipt, please?', exZh:'请给我一张收据好吗？' },
+  { w:'refund', p:'/ˈriːfʌnd/', zh:'退款', ex:'I would like a refund for this.', exZh:'我想退掉这个。' },
+  { w:'appointment', p:'/əˈpɔɪntmənt/', zh:'预约', ex:'I have an appointment at three.', exZh:'我三点有个预约。' },
+  { w:'prescription', p:'/prɪˈskrɪpʃn/', zh:'处方', ex:'You can get it with a prescription.', exZh:'凭处方就能买到。' },
+  { w:'over the counter', p:'/ˈoʊvər ðə ˈkaʊntər/', zh:'非处方（直接可买）', ex:'This medicine is over the counter.', exZh:'这药是非处方药。' },
+  { w:'tip', p:'/tɪp/', zh:'小费', ex:'Is the tip included?', exZh:'小费包含在内吗？' },
+  { w:'appetizer', p:'/ˈæpɪtaɪzər/', zh:'前菜', ex:'We will start with an appetizer.', exZh:'我们先来份前菜。' },
+  { w:'entree', p:'/ˈɑːntreɪ/', zh:'主菜', ex:'I will have the chicken as my entree.', exZh:'我主菜要鸡肉。' },
+  { w:'to-go', p:'/tə ɡoʊ/', zh:'外带', ex:'Can I get this to go?', exZh:'这个能外带吗？' },
+  { w:'leftovers', p:'/ˈleftˌoʊvərz/', zh:'剩菜', ex:'I will take the leftovers home.', exZh:'我把剩菜打包带回家。' },
+  { w:'grocery', p:'/ˈɡroʊsəri/', zh:'食品杂货', ex:'I need to do some grocery shopping.', exZh:'我得去买点日用品和食品。' },
+  { w:'on sale', p:'/ɒn seɪl/', zh:'打折中', ex:'These shoes are on sale this week.', exZh:'这双鞋这周打折。' },
+  { w:'out of stock', p:'/aʊt əv stɒk/', zh:'缺货', ex:'Sorry, that size is out of stock.', exZh:'抱歉，那个尺码缺货。' },
+  { w:'try on', p:'/traɪ ɒn/', zh:'试穿', ex:'Can I try this on?', exZh:'我能试穿一下吗？' },
+  { w:'fitting room', p:'/ˈfɪtɪŋ ruːm/', zh:'试衣间', ex:'The fitting room is over there.', exZh:'试衣间在那边。' },
+  { w:'return policy', p:'/rɪˈtɜːrn ˈpɑːləsi/', zh:'退货政策', ex:'What is your return policy?', exZh:'你们的退货政策是什么？' },
+  { w:'customs', p:'/ˈkʌstəmz/', zh:'海关', ex:'We went through customs quickly.', exZh:'我们很快通过了海关。' },
+  { w:'currency', p:'/ˈkɜːrənsi/', zh:'货币', ex:'Where can I exchange currency?', exZh:'我在哪里能换汇？' },
+  { w:'one-way', p:'/wʌn weɪ/', zh:'单程', ex:'I need a one-way ticket to LA.', exZh:'我要一张去洛杉矶的单程票。' },
+  { w:'round trip', p:'/raʊnd trɪp/', zh:'往返', ex:'A round trip to Boston, please.', exZh:'请给我一张去波士顿的往返票。' },
+  { w:'check in', p:'/tʃek ɪn/', zh:'办理登机 / 入住', ex:'We need to check in two hours early.', exZh:'我们要提前两小时办理登机。' },
+  { w:'gate', p:'/ɡeɪt/', zh:'登机口', ex:'What gate does this flight leave from?', exZh:'这个航班从哪个登机口出发？' },
+  { w:'delay', p:'/dɪˈleɪ/', zh:'延误', ex:'The flight is delayed by an hour.', exZh:'航班延误一小时。' },
+  { w:'directions', p:'/dəˈrekʃnz/', zh:'方向 / 路线', ex:'Could you give me directions to the station?', exZh:'能告诉我怎么去车站吗？' },
+  { w:'intersection', p:'/ˌɪntərˈsekʃn/', zh:'十字路口', ex:'Turn left at the next intersection.', exZh:'下一个路口左转。' },
+  { w:'block', p:'/blɒk/', zh:'街区', ex:'It is two blocks from here.', exZh:'离这里两个街区。' },
+  { w:'sore throat', p:'/sɔːr θroʊt/', zh:'喉咙痛', ex:'I have a sore throat today.', exZh:'我今天喉咙痛。' },
+  { w:'runny nose', p:'/ˈrʌni noʊz/', zh:'流鼻涕', ex:'I have had a runny nose all morning.', exZh:'我一早上都在流鼻涕。' },
+  { w:'fever', p:'/ˈfiːvər/', zh:'发烧', ex:'Do you have a fever?', exZh:'你发烧吗？' },
+  { w:'insurance', p:'/ɪnˈʃʊrəns/', zh:'保险', ex:'Does my insurance cover this?', exZh:'我的保险能报销这个吗？' },
+  { w:'vacancy', p:'/ˈveɪkənsi/', zh:'空房', ex:'Do you have any vacancies tonight?', exZh:'今晚还有空房吗？' },
+  { w:'checkout', p:'/ˈtʃekaʊt/', zh:'退房', ex:'Checkout is at noon.', exZh:'中午退房。' },
+  { w:'lobby', p:'/ˈlɒbi/', zh:'大堂', ex:'I will meet you in the lobby.', exZh:'我在大堂等你。' },
+  { w:'reservation', p:'/ˌrezərˈveɪʃn/', zh:'预订', ex:'I have a reservation under the name Chen.', exZh:'我用陈的名字预订了。' }
+];
+
+/* 听读素材库 */
+const PASSAGES = [
+  { title:'机场广播 · 登机通知', en:'Attention, passengers of flight UA 178 to Los Angeles: boarding will begin at gate B12 in ten minutes. Please have your boarding pass and passport ready. First class and passengers with small children may board first. Thank you.' },
+  { title:'咖啡店对话 · 点单', en:'A: What can I get for you today?\nB: I will have a medium latte to go, please.\nA: Anything else?\nB: That is all. How much is that?\nA: That is six dollars and fifty cents.\nB: Here you go. Keep the change.' },
+  { title:'天气新闻 · 冷空气来袭', en:'A cold front is moving into the region tonight. Temperatures will drop by about ten degrees, and there is a chance of light rain tomorrow morning. Drivers should be careful on the roads. The weekend should clear up with sunshine returning by Sunday.' },
+  { title:'超市对话 · 结账', en:'A: Do you have a rewards card with us?\nB: No, I do not.\nA: Would you like to sign up? It is free, and you get discounts right away.\nB: Sure, that sounds good.\nA: Great. Your total is twenty-three dollars and ten cents. Card or cash?' },
+  { title:'酒店入住 · 对话', en:'A: Welcome to the Grand Hotel. How can I help you?\nB: Hi, I have a reservation under the name Chen.\nA: Let me check. Yes, a single room for three nights. May I see your passport and a credit card?\nB: Here you are. Is breakfast included?\nA: Yes, it is served from seven to ten in the restaurant on the second floor.' },
+  { title:'餐厅对话 · 点餐与结账', en:'A: Are you ready to order?\nB: Yes. We will start with the appetizer, and I will have the grilled chicken as my entree.\nA: Would you like anything to drink?\nB: Just water, please.\nA: Can I get you anything else?\nB: No, thanks. Could we have the check when you get a chance?' },
+  { title:'派对寒暄 · 认识新朋友', en:'A: Hi, I do not think we have met. I am Mike.\nB: Nice to meet you, Mike. I am Chen. This is my first time at one of these parties.\nA: Welcome! So what brings you to the city?\nB: I am here for a year, mostly to improve my English and travel around.' },
+  { title:'问路对话 · 地铁站', en:'A: Excuse me, how do I get to the nearest subway station?\nB: Go straight for two blocks, then turn left at the intersection. The station is right across the street from the bank.\nA: Is it far?\nB: No, about five minutes on foot.\nA: Great, thanks so much!\nB: No problem. Have a nice day!' }
+];
+
+/* 跟读句库 */
+const SENTENCES = [
+  { en:'Could I get a receipt for that?', zh:'能给我开一张收据吗？' },
+  { en:'Is this seat taken?', zh:'这个座位有人吗？' },
+  { en:'I am just looking, thanks.', zh:'我只是随便看看，谢谢。' },
+  { en:'Could you say that again, a little more slowly?', zh:'你能再说一遍、稍微慢一点吗？' },
+  { en:'I will have what she is having.', zh:'我来一份和她一样的。' },
+  { en:'Do you have this in a size medium?', zh:'这个有 M 码吗？' },
+  { en:'Can I pay by card?', zh:'可以刷卡吗？' },
+  { en:'Where is the nearest restroom?', zh:'最近的洗手间在哪里？' },
+  { en:'I am running a bit late.', zh:'我可能要晚点到。' },
+  { en:'Let us catch up sometime.', zh:'我们改天聚聚聊聊。' },
+  { en:'That sounds like a plan.', zh:'听起来可以，就这么办。' },
+  { en:'No rush at all.', zh:'完全不着急。' },
+  { en:'It is on me this time.', zh:'这次我请客。' },
+  { en:'Could we get the check, please?', zh:'麻烦结一下账。' },
+  { en:'I would like to book a table for two.', zh:'我想订一张两人桌。' },
+  { en:'How long does it take to get there?', zh:'到那里要多久？' },
+  { en:'I am not sure about that.', zh:'这个我不太确定。' },
+  { en:'What do you recommend?', zh:'你有什么推荐吗？' },
+  { en:'Could you give me a hand with this?', zh:'你能帮我个忙吗？' },
+  { en:'Have a nice day!', zh:'祝你今天愉快！' }
+];
+
+/* ================= 基础工具 ================= */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function renderText(s){ return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>'); }
+function $(s){ return document.querySelector(s); }
+function $$(s){ return Array.from(document.querySelectorAll(s)); }
+function dateStr(d){
+  d = d || new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function addDays(iso, n){
+  const d = new Date(iso + 'T12:00:00');
+  d.setDate(d.getDate() + n);
+  return dateStr(d);
+}
+function hash(s){
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+function dailyIndex(d, len){ return hash(d) % len; }
+function dailyPick(d, arr){ return arr[dailyIndex(d, arr.length)]; }
+function dailySlice(d, arr, n){
+  const start = dailyIndex(d, arr.length), out = [];
+  for (let i = 0; i < n; i++) out.push(arr[(start + i) % arr.length]);
+  return out;
+}
+function weekStart(){
+  const d = new Date(); const w = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - w);
+  return dateStr(d);
+}
+
+/* ================= 状态管理（localStorage） ================= */
+let state = null;
+function defaultState(){
+  return {
+    settings: {
+      chat:  { baseUrl:'https://api.deepseek.com', key:'', model:'deepseek-chat' },
+      voice: {
+        baseUrl:'https://dashscope.aliyuncs.com/compatible-mode/v1',
+        key:'',   // 隐私起见不再写死 key，首次使用时在设置页粘贴（只存本机 localStorage）
+        model:'qwen3-tts-vd-2026-01-26',
+        voice:'Cherry',
+        useQwenASR:true,
+        useQwenTTS:true
+      },
+      departureDate:'',
+      ptsMain:60, ptsSide:25, ptsLevel:100, dropAfter:3
+    },
+    level: { index:3, progress:0 },   // 默认 A1-1
+    records: {},                       // 日期 -> 当天记录
+    levelHistory: [],
+    dropAnchor:'',                     // 掉段/首次启动的计数锚点
+    notice:'',
+    welcomed:false
+  };
+}
+function normalize(s){
+  const def = defaultState();
+  s = s || {};
+  s.settings = Object.assign(def.settings, s.settings || {});
+  s.settings.chat  = Object.assign(def.settings.chat, s.settings.chat || {});
+  s.settings.voice = Object.assign(def.settings.voice, s.settings.voice || {});
+  s.level = Object.assign(def.level, s.level || {});
+  s.records = s.records || {};
+  s.levelHistory = s.levelHistory || [];
+  s.dropAnchor = s.dropAnchor || '';
+  s.notice = s.notice || '';
+  return s;
+}
+function load(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? normalize(JSON.parse(raw)) : null;
+  } catch(e){ return null; }
+}
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+
+function ensureRecord(d){
+  d = d || dateStr();
+  if (!state.records[d]) {
+    state.records[d] = {
+      mode:null, topicIdx:null, mainDone:false,
+      sides:{ cards:false, input:false, repeat:false },
+      pending:[], session:[], summary:null, exchanges:0
+    };
+  }
+  const r = state.records[d];
+  if (r.topicIdx == null) r.topicIdx = dailyIndex(d, TOPICS.length);
+  return r;
+}
+
+/* ================= 打卡 / 段位计算 ================= */
+function calcStreak(){
+  let streak = 0, d = dateStr();
+  if (!(state.records[d] && state.records[d].mainDone)) d = addDays(d, -1);
+  while (state.records[d] && state.records[d].mainDone){ streak++; d = addDays(d, -1); }
+  return streak;
+}
+function calcMissed(){
+  let missed = 0;
+  const anchor = state.dropAnchor || '2020-01-01';
+  let d = addDays(dateStr(), -1);
+  while (d > anchor){
+    const r = state.records[d];
+    if (r && r.mainDone) break;
+    missed++;
+    d = addDays(d, -1);
+  }
+  return missed;
+}
+function calcTotal(){ return Object.values(state.records).filter(r => r.mainDone).length; }
+function weekDone(){
+  const start = weekStart(); let n = 0;
+  for (let i = 0; i < 7; i++) if (state.records[addDays(start, i)] && state.records[addDays(start, i)].mainDone) n++;
+  return n;
+}
+function levelInfo(){
+  const idx = state.level.index;
+  const lv = LEVELS[idx], parts = lv.split('-');
+  const next = idx < LEVELS.length - 1 ? LEVELS[idx + 1] : null;
+  const remain = Math.max(0, state.settings.ptsLevel - state.level.progress);
+  return { idx, lv, big:parts[0], sub:'-' + parts[1], next, remain };
+}
+function addPoints(n){
+  const before = state.level.index;
+  state.level.progress += n;
+  while (state.level.progress >= state.settings.ptsLevel && state.level.index < LEVELS.length - 1){
+    state.level.progress -= state.settings.ptsLevel;
+    state.level.index++;
+  }
+  if (state.level.index >= LEVELS.length - 1){
+    state.level.index = LEVELS.length - 1;
+    state.level.progress = Math.min(state.level.progress, state.settings.ptsLevel);
+  }
+  if (state.level.index > before){
+    state.levelHistory.push({ date:dateStr(), from:LEVELS[before], to:LEVELS[state.level.index] });
+    toast('🎉 段位提升：' + LEVELS[before] + ' → ' + LEVELS[state.level.index]);
+  }
+  save();
+}
+function applyDropIfNeeded(){
+  // 首次使用（或旧数据无锚点）时，先设置锚点再退出，避免新用户一打开就被掉段
+  if (!state.dropAnchor){ state.dropAnchor = dateStr(); save(); return; }
+  const n = state.settings.dropAfter;
+  if (calcMissed() >= n && state.level.index > 0){
+    state.level.index--;
+    state.level.progress = 0;
+    state.dropAnchor = addDays(dateStr(), -1);
+    state.notice = '⚠️ 你已连续 ' + n + ' 天未完成主线，段位降至 ' + LEVELS[state.level.index] + '。别灰心，今天开口就是新的开始。';
+    save();
+  }
+}
+
+/* ================= 提示 / 弹窗 ================= */
+let toastTimer = null;
+function toast(msg, type){
+  const el = $('#toast');
+  el.textContent = msg;
+  el.className = 'show' + (type === 'err' ? ' err' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = ''; }, 2600);
+}
+function hideModal(){ $('#modalMask').classList.add('hidden'); }
+function showModal(title, bodyHTML, buttons){
+  $('#modalTitle').textContent = title;
+  $('#modalBody').innerHTML = bodyHTML;
+  const wrap = $('#modalActions'); wrap.innerHTML = '';
+  (buttons || [{ label:'知道了' }]).forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'btn' + (b.cls ? ' ' + b.cls : '');
+    btn.textContent = b.label;
+    btn.onclick = () => { hideModal(); if (b.cb) b.cb(); };
+    wrap.appendChild(btn);
+  });
+  $('#modalMask').classList.remove('hidden');
+}
+
+/* ================= AI 对话（DeepSeek） ================= */
+function SYSTEM(topic){
+  return '你是我的私人"影子英语老师"，一位耐心、鼓励式、口语地道的美式英语陪练。\n' +
+  '【今天的话题】' + topic.en + '（场景：' + topic.zh + '）\n' +
+  '【我的情况】我是中文母语者，正在提升日常英语口语与流利度，一年后要去美国旅行。\n' +
+  '【对话规则】\n' +
+  '1. 我们用英文对话。我每发一段话，你先自然回应、推进聊天，再视情况纠错。\n' +
+  '2. 纠错不是每轮都有：表达自然就爽快认可；有明显不地道或严重影响理解时才纠。\n' +
+  '3. 每次纠错：先给一句总体鼓励，再只挑 1-3 个最值得改的点，严格按三段格式：\n' +
+  '【你说】我的原话\n【更好地说】母语者会怎么说的版本\n【为什么】一句话点明区别\n' +
+  '4. 纠错优先级：地道自然 > 用词准确 > 短语搭配 > 句子结构 > 语法。不影响理解的小语法错误不要提。\n' +
+  '5. 每次回复 2-4 句英文，结尾自然地问一个问题，让我继续往下说。\n' +
+  '6. 收到"总结/结束"指令时，立刻用中文输出对话总结：\n' +
+  '【亮点】1-2 句\n【最值得改的 2-3 点】每点按 你说/更好地说/为什么\n【下一步建议】1 句\n控制在 180 字内。';
+}
+async function chatRequest(msgs, maxTokens){
+  const cfg = state.settings.chat;
+  const base = cfg.baseUrl.replace(/\/+$/, '');
+  const res = await fetch(base + '/chat/completions', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + cfg.key },
+    body: JSON.stringify({ model:cfg.model, messages:msgs, temperature:0.7, max_tokens:maxTokens || 900 })
+  });
+  if (!res.ok){
+    let t = '';
+    try { t = await res.text(); } catch(e){}
+    throw new Error('HTTP ' + res.status + ' ' + t.slice(0, 160));
+  }
+  const data = await res.json();
+  const txt = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+  if (!txt) throw new Error('接口返回内容为空');
+  return txt;
+}
+
+/* ================= 视图切换与渲染 ================= */
+function switchView(name){
+  $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+  $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === name));
+  if (name === 'main') renderMain();
+  if (name === 'side') renderSide();
+  if (name === 'level') renderLevel();
+  if (name === 'history') renderHistory();
+  if (name === 'settings') populateSettings();
+  window.scrollTo({ top:0 });
+}
+function renderAll(){
+  renderHome(); renderMain(); renderSide(); renderLevel(); renderHistory(); populateSettings();
+}
+
+function renderWeekGrid(el){
+  el.innerHTML = '';
+  const start = weekStart();
+  for (let i = 0; i < 7; i++){
+    const d = addDays(start, i);
+    const r = state.records[d];
+    const cls = ['wcell'];
+    if (r && r.mainDone) cls.push('done');
+    else if (d < dateStr()) cls.push('miss');
+    if (d === dateStr()) cls.push('today');
+    const cell = document.createElement('div');
+    cell.className = cls.join(' ');
+    cell.innerHTML = '<span>' + WEEK_CN[new Date(d + 'T12:00:00').getDay()] + '</span><b>' + d.slice(8) + '</b>';
+    el.appendChild(cell);
+  }
+}
+
+function renderHome(){
+  const r = ensureRecord();
+  const now = new Date();
+  $('#homeDate').textContent =
+    now.getFullYear() + '年' + (now.getMonth()+1) + '月' + now.getDate() + '日 周' + WEEK_CN[now.getDay()] +
+    ' · ' + (r.mainDone ? '今日已打卡 ✅' : '今天还没打卡');
+
+  // 美国之行倒计时
+  const dep = state.settings.departureDate;
+  if (dep){
+    const days = Math.ceil((new Date(dep + 'T00:00:00') - new Date(dateStr() + 'T00:00:00')) / 86400000);
+    if (days > 0) $('#countdownText').innerHTML = '距离美国之行还有 <b>' + days + '</b> 天';
+    else if (days === 0) $('#countdownText').innerHTML = '✈️ 就是今天，出发！';
+    else $('#countdownText').textContent = '美国之行已经开始啦 ✈️';
+  } else {
+    $('#countdownText').textContent = '在设置页设定出发日期后，这里会显示倒计时。';
+  }
+
+  // 通知横幅（掉段等）
+  const nb = $('#noticeBanner');
+  if (state.notice){ nb.textContent = state.notice; nb.classList.remove('hidden'); state.notice = ''; save(); }
+  else nb.classList.add('hidden');
+
+  // 今日模式
+  $$('.mode-btn').forEach(b => b.classList.toggle('active', r.mode === b.dataset.mode));
+
+  // 主线卡片
+  $('#homeTopic').textContent = TOPICS[r.topicIdx].en + ' · ' + TOPICS[r.topicIdx].zh;
+  const ms = $('#mainStatusText');
+  ms.textContent = r.mainDone ? '已完成 ✓ 今天可以放松了' : '未完成';
+  ms.className = 'status' + (r.mainDone ? ' done' : '');
+  $('#btnStartMain').textContent = r.mainDone ? '查看今天的主线对话' : '开始主线对话';
+
+  // 段位
+  const li = levelInfo();
+  $('#homeBadgeBig').textContent = li.big;
+  $('#homeBadgeSub').textContent = li.sub;
+  $('#homeLevelName').textContent = '段位 ' + li.lv;
+  $('#homeBar').style.width = Math.min(100, state.level.progress / state.settings.ptsLevel * 100) + '%';
+  $('#homeBarText').textContent = state.level.progress + ' / ' + state.settings.ptsLevel + ' 进度';
+  $('#homeNextText').textContent = li.next ? '距 ' + li.next + ' 还差 ' + li.remain + ' 进度' : '已达最高段位 ' + li.lv;
+
+  // 打卡统计与风险
+  const streak = calcStreak(), missed = calcMissed();
+  $('#streakText').textContent = '连续打卡 ' + streak + ' 天 · 累计 ' + calcTotal() + ' 天';
+  renderWeekGrid($('#weekGrid'));
+  const risk = $('#riskText');
+  if (r.mainDone) { risk.textContent = '今日已完成主线，不会掉段。'; risk.className = 'risk ok'; }
+  else if (missed >= 1){
+    risk.textContent = '⚠️ 已连续 ' + missed + ' 天未完成主线，再断 ' + Math.max(0, state.settings.dropAfter - missed) + ' 天将掉段';
+    risk.className = 'risk';
+  } else {
+    risk.textContent = streak > 0 ? '今天完成主线，即可保持连续打卡。' : '今天完成主线，开启你的连续打卡。';
+    risk.className = 'risk ok';
+  }
+
+  // 支线概览
+  const doneCount = ['cards','input','repeat'].filter(k => r.sides[k]).length;
+  $('#sideSummary').textContent =
+    (r.pending.length ? '待完成：' + r.pending.map(k => SIDE_NAMES[k]).join('、') + '；' : '') +
+    '今日完成 ' + doneCount + ' / 3（支线只加分，不影响打卡）';
+  const chips = $('#sideChips'); chips.innerHTML = '';
+  [['cards','单词卡'],['input','听读'],['repeat','跟读']].forEach(pair => {
+    const c = document.createElement('span');
+    c.className = 'chip' + (r.sides[pair[0]] ? ' done' : '');
+    c.textContent = (r.sides[pair[0]] ? '✓ ' : '○ ') + pair[1];
+    chips.appendChild(c);
+  });
+
+  // P1 占位
+  const pg = $('#p1Grid'); pg.innerHTML = '';
+  P1.forEach((item, i) => {
+    const b = document.createElement('button');
+    b.className = 'p1-chip';
+    b.dataset.p1 = i;
+    b.innerHTML = '<b>' + item.icon + ' ' + esc(item.name) + '</b>' + esc(item.desc);
+    pg.appendChild(b);
+  });
+}
+
+function renderMain(){
+  const r = ensureRecord();
+  const t = TOPICS[r.topicIdx];
+  $('#mainTopicTitle').textContent = t.en + ' · ' + t.zh;
+  $('#mainScene').textContent = '场景：' + t.scene + ' 建议开场：' + t.starter;
+  $('#mainDoneBanner').classList.toggle('hidden', !r.mainDone);
+
+  const box = $('#chatBox'); box.innerHTML = '';
+  r.session.forEach(m => {
+    const d = document.createElement('div');
+    d.className = 'msg ' + (m.role === 'user' ? 'user' : 'ai');
+    d.innerHTML = renderText(m.text);
+    box.appendChild(d);
+  });
+  box.scrollTop = box.scrollHeight;
+
+  $('#summaryCard').classList.toggle('hidden', !r.summary && !r.mainDone);
+  if (r.summary) $('#summaryBody').innerHTML = renderText(r.summary);
+
+  const canEnd = r.exchanges >= 3;
+  $('#endHint').textContent = r.mainDone ? '今日已完成' : (canEnd ? '可以随时结束对话，让老师总结。' : '再多说几句（至少 3 句）后再结束。');
+  $('#btnEndChat').disabled = r.mainDone || !canEnd || busy;
+  $('#btnCheckin').classList.toggle('hidden', !!r.mainDone);
+  $('#btnCheckin').disabled = busy;
+  $$('.composer').forEach(el => el.style.display = r.mainDone ? 'none' : '');
+  $('#btnSend').disabled = busy;
+  $('#btnMic').disabled = busy;
+  $('#micHint').textContent = '语音：优先 Qwen 语音识别（免费）；失败或浏览器不支持时，请直接打字输入。';
+}
+
+/* ================= 主线对话逻辑 ================= */
+let busy = false;
+function setBusy(b, msg){
+  busy = b;
+  const box = $('#chatBox');
+  const old = $('#typingRow');
+  if (old) old.remove();
+  if (b){
+    const d = document.createElement('div');
+    d.className = 'msg ai typing';
+    d.id = 'typingRow';
+    d.textContent = msg || '老师正在输入…';
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
+  }
+  renderMain();
+}
+function startMain(){
+  const r = ensureRecord();
+  if (!state.settings.chat.key){
+    toast('请先在设置页填入 DeepSeek API Key', 'err');
+    switchView('settings');
+    return;
+  }
+  if (r.session.length === 0){
+    const t = TOPICS[r.topicIdx];
+    r.session.push({
+      role:'assistant',
+      text:'Hi there! 👋 Today we are going to talk about: **' + t.en + '**\n\n（' + t.zh + '）\n\n' + t.starter + '\n\nLet us begin — you go first!'
+    });
+    save();
+  }
+  switchView('main');
+}
+function buildMsgs(r, mode){
+  const msgs = [{ role:'system', content:SYSTEM(TOPICS[r.topicIdx]) }];
+  r.session.slice(-20).forEach(m => msgs.push({ role:m.role, content:m.text }));
+  if (mode === 'summary') msgs.push({ role:'user', content:'我们聊得差不多了，请结束对话，按规则用中文输出本次对话总结。' });
+  return msgs;
+}
+async function sendMessage(){
+  const ta = $('#inputText');
+  const text = ta.value.trim();
+  if (!text || busy) return;
+  if (!state.settings.chat.key){
+    toast('请先在设置页填入 DeepSeek API Key', 'err');
+    switchView('settings');
+    return;
+  }
+  const r = ensureRecord();
+  r.session.push({ role:'user', text:text });
+  r.exchanges++;
+  ta.value = '';
+  save();
+  setBusy(true);
+  try {
+    const reply = await chatRequest(buildMsgs(r, 'continue'));
+    r.session.push({ role:'assistant', text:reply });
+    save();
+  } catch(e){
+    toast('对话失败：' + e.message, 'err');
+  } finally {
+    setBusy(false);
+  }
+}
+async function endChat(){
+  const r = ensureRecord();
+  if (r.mainDone || busy) return;
+  setBusy(true, '老师正在整理总结…');
+  try {
+    const summary = await chatRequest(buildMsgs(r, 'summary'), 800);
+    r.summary = summary;
+    r.session.push({ role:'assistant', text:'📋 ' + summary });
+    save();
+  } catch(e){
+    toast('总结生成失败：' + e.message + '（仍可直接打卡）', 'err');
+  } finally {
+    setBusy(false);
+  }
+}
+function completeMain(){
+  const r = ensureRecord();
+  if (r.mainDone) return;
+  r.mainDone = true;
+  addPoints(state.settings.ptsMain);
+  save();
+  renderAll();
+  switchView('home');
+  toast('✅ 今日主线完成，打卡成功！');
+}
+
+/* ================= 支线任务 ================= */
+let wordState = null;
+let repeatState = null;
+function completeSide(key){
+  const r = ensureRecord();
+  if (r.sides[key]) return;
+  r.sides[key] = true;
+  r.pending = r.pending.filter(k => k !== key);
+  addPoints(state.settings.ptsSide);
+  save();
+  renderSide(); renderHome();
+  toast(SIDE_NAMES[key] + '完成，+' + state.settings.ptsSide + ' 进度');
+}
+function deferSide(key){
+  const r = ensureRecord();
+  if (!r.pending.includes(key)) r.pending.push(key);
+  save();
+  renderHome(); renderSide();
+  toast('已保留："' + SIDE_NAMES[key] + '"今天内回来完成即可');
+  switchView('home');
+}
+
+function renderSide(){
+  const r = ensureRecord();
+  const tag = (id, done) => {
+    const el = $(id);
+    el.textContent = done ? '已完成' : '未完成';
+    el.className = 'tag' + (done ? ' done' : '');
+  };
+  tag('#cardsDone', r.sides.cards);
+  tag('#inputDone', r.sides.input);
+  tag('#repeatDone', r.sides.repeat);
+
+  // 单词卡
+  if (!wordState || wordState.date !== dateStr())
+    wordState = { date:dateStr(), words:dailySlice(dateStr(), WORDS, 5), pos:0, known:0, answered:0 };
+  renderWordCard();
+
+  // 听读
+  const p = dailyPick(dateStr(), PASSAGES);
+  $('#passageTitle').textContent = p.title;
+  $('#passageBody').textContent = p.en;
+  $('#btnFinishInput').disabled = r.sides.input;
+  $('#btnFinishInput').textContent = r.sides.input ? '已完成 ✓' : '我读完了';
+
+  // 跟读
+  renderRepeatList();
+}
+function renderWordCard(){
+  if (!wordState) return;
+  const w = wordState.words[wordState.pos];
+  $('#wordFront').textContent = w.w;
+  $('#wordBack').innerHTML =
+    '<div class="phon">' + esc(w.p) + '</div>' +
+    '<div>' + esc(w.zh) + '</div>' +
+    '<div class="ex">' + esc(w.ex) + '</div>' +
+    '<div class="exZh">' + esc(w.exZh) + '</div>' +
+    '<div class="row"><button class="btn mini ghost" data-wordspeak="1">▶ 听例句</button></div>';
+  $('#wordBack').classList.add('hidden');
+  $('#btnFlipWord').textContent = '显示答案';
+  $('#wordProgress').textContent = '第 ' + (wordState.pos + 1) + ' / ' + wordState.words.length + ' 个 · 已认识 ' + wordState.known + ' 个';
+  $('#btnFinishCards').classList.toggle('hidden', !(wordState.answered >= wordState.words.length));
+}
+function markWord(know){
+  if (!wordState || busy) return;
+  if (know) wordState.known++;
+  wordState.answered++;
+  if (wordState.pos < wordState.words.length - 1) wordState.pos++;
+  if (wordState.answered >= wordState.words.length)
+    toast('本组单词已过完，可点"完成本组"加分');
+  renderWordCard();
+}
+function renderRepeatList(){
+  const r = ensureRecord();
+  if (!repeatState || repeatState.date !== dateStr()){
+    repeatState = { date:dateStr(), words:dailySlice(dateStr(), SENTENCES, 5), listened:new Set(), results:{} };
+  }
+  const el = $('#repeatList'); el.innerHTML = '';
+  repeatState.words.forEach((s, i) => {
+    const row = document.createElement('div');
+    row.className = 'rep-row';
+    row.innerHTML =
+      '<div class="rep-en">' + esc(s.en) + ' <button class="btn mini" data-rep="listen-' + i + '">▶ 听</button></div>' +
+      '<div class="rep-zh">' + esc(s.zh) + '</div>' +
+      '<div class="rep-mic"><button class="btn mini ghost" data-rep="mic-' + i + '">🎤 跟读</button>' +
+      '<span class="rep-result" id="repRes-' + i + '">' + (repeatState.results[i] ? esc(repeatState.results[i]) : '') + '</span></div>';
+    el.appendChild(row);
+  });
+  $('#btnFinishRepeat').disabled = repeatState.listened.size < repeatState.words.length || r.sides.repeat;
+  $('#btnFinishRepeat').textContent = r.sides.repeat ? '已完成 ✓' : '我练好了，完成支线';
+}
+function handleRep(action, idx){
+  if (!repeatState) return;
+  if (action === 'listen'){
+    repeatState.listened.add(idx);
+    speak(repeatState.words[idx].en);
+    renderRepeatList();
+  } else if (action === 'mic'){
+    micTarget = { row:idx };
+    onMic();
+  }
+}
+
+/* ================= 语音：识别与朗读 ================= */
+let micTarget = null;          // null=主线输入框；{row:i}=跟读第 i 句
+let recorder = null, chunks = [];
+let browserSR = null;
+
+async function qwenTranscribe(blob){
+  const cfg = state.settings.voice;
+  const base = cfg.baseUrl.replace(/\/+$/, '');
+  const fd = new FormData();
+  fd.append('file', blob, 'recording.webm');
+  fd.append('model', cfg.model);
+  fd.append('language', 'en');
+  fd.append('response_format', 'json');
+  const res = await fetch(base + '/audio/transcriptions', {
+    method:'POST', headers:{ 'Authorization':'Bearer ' + cfg.key }, body:fd
+  });
+  if (!res.ok) throw new Error('语音接口 HTTP ' + res.status);
+  const data = await res.json();
+  if (!data.text) throw new Error('未返回文字');
+  return data.text;
+}
+async function qwenTTS(text){
+  const cfg = state.settings.voice;
+  const base = cfg.baseUrl.replace(/\/+$/, '');
+  const res = await fetch(base + '/audio/speech', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + cfg.key },
+    body: JSON.stringify({ model:cfg.model, input:text, voice:cfg.voice || 'default', response_format:'mp3', speed:0.9 })
+  });
+  if (!res.ok) throw new Error('语音接口 HTTP ' + res.status);
+  const blob = await res.blob();
+  const a = new Audio(URL.createObjectURL(blob));
+  a.play();
+}
+async function speak(text){
+  if (state.settings.voice.useQwenTTS && state.settings.voice.key){
+    try { await qwenTTS(text); return; } catch(e){ /* 回退浏览器发音 */ }
+  }
+  if ('speechSynthesis' in window){
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = 0.92;
+    const vs = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('en'));
+    if (vs.length) u.voice = vs[0];
+    speechSynthesis.speak(u);
+  } else {
+    toast('当前环境不支持朗读', 'err');
+  }
+}
+
+function putTranscript(text){
+  if (micTarget && micTarget.row != null){
+    repeatState.results[micTarget.row] = '你读的（转写）：' + text;
+    renderRepeatList();
+  } else {
+    $('#inputText').value = text;
+    if (micTarget === null) $('#inputText').focus();
+  }
+}
+function setMicUI(rec){
+  const b = $('#btnMic');
+  if (b) b.textContent = rec ? '⏹ 停止录音' : '🎤 语音';
+}
+
+async function onMic(){
+  if (busy) return;
+  const cfg = state.settings.voice;
+  if (recorder && recorder.state !== 'inactive'){ recorder.stop(); return; }
+  if (browserSR){ browserSR.stop(); return; }
+
+  if (cfg.useQwenASR && cfg.key){
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+      const mime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+      recorder = new MediaRecorder(stream, mime ? { mimeType:mime } : undefined);
+      chunks = [];
+      recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+      recorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        setMicUI(false);
+        const blob = new Blob(chunks, { type:mime || 'audio/webm' });
+        setBusy(true, '正在语音识别…');
+        try {
+          const text = await qwenTranscribe(blob);
+          if (!text) throw new Error('识别结果为空');
+          putTranscript(text);
+        } catch(e){
+          toast('Qwen 语音识别失败：' + e.message + '。请检查语音设置，或改用打字。', 'err');
+        } finally { setBusy(false); }
+      };
+      recorder.start();
+      setMicUI(true);
+      toast('录音中…点击"停止录音"结束');
+    } catch(e){
+      toast('无法使用麦克风（权限或浏览器不支持），请改用打字', 'err');
+    }
+  } else {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR){
+      browserSR = new SR();
+      browserSR.lang = 'en-US';
+      browserSR.interimResults = false;
+      browserSR.maxAlternatives = 1;
+      browserSR.onresult = e => putTranscript(e.results[0][0].transcript);
+      browserSR.onerror = e => toast('语音识别失败：' + e.error + '，请改用打字', 'err');
+      browserSR.onend = () => { browserSR = null; setMicUI(false); };
+      browserSR.start();
+      setMicUI(true);
+    } else {
+      toast('当前浏览器不支持语音识别，请打字输入', 'err');
+    }
+  }
+}
+
+/* ================= 设置页 ================= */
+function populateSettings(){
+  const s = state.settings;
+  $('#aboutVersion').textContent = '当前版本 v' + APP_VERSION;
+  $('#setChatBase').value = s.chat.baseUrl;
+  $('#setChatKey').value = s.chat.key;
+  $('#setChatModel').value = s.chat.model;
+  $('#setVoiceBase').value = s.voice.baseUrl;
+  $('#setVoiceKey').value = s.voice.key;
+  $('#setVoiceModel').value = s.voice.model;
+  $('#setVoiceName').value = s.voice.voice || '';
+  $('#chkQwenASR').checked = s.voice.useQwenASR;
+  $('#chkQwenTTS').checked = s.voice.useQwenTTS;
+  $('#setDeparture').value = s.departureDate || '';
+  const sel = $('#setLevel'); sel.innerHTML = '';
+  LEVELS.forEach((lv, i) => {
+    const o = document.createElement('option');
+    o.value = i;
+    o.textContent = lv + ' · ' + LEVEL_DESC[lv.split('-')[0]];
+    sel.appendChild(o);
+  });
+  sel.value = state.level.index;
+  $('#setPtsMain').value = s.ptsMain;
+  $('#setPtsSide').value = s.ptsSide;
+  $('#setPtsLevel').value = s.ptsLevel;
+  $('#setDropAfter').value = s.dropAfter;
+}
+function readSettings(){
+  const s = state.settings;
+  s.chat.baseUrl = $('#setChatBase').value.trim() || 'https://api.deepseek.com';
+  s.chat.key = $('#setChatKey').value.trim();
+  s.chat.model = $('#setChatModel').value.trim() || 'deepseek-chat';
+  s.voice.baseUrl = $('#setVoiceBase').value.trim() || 'https://dashscope.aliyuncs.com/compatible-mode/v1';
+  s.voice.key = $('#setVoiceKey').value.trim();
+  s.voice.model = $('#setVoiceModel').value.trim() || 'qwen3-tts-vd-2026-01-26';
+  s.voice.voice = $('#setVoiceName').value.trim();
+  s.voice.useQwenASR = $('#chkQwenASR').checked;
+  s.voice.useQwenTTS = $('#chkQwenTTS').checked;
+  s.departureDate = $('#setDeparture').value || '';
+  state.level.index = Math.min(LEVELS.length - 1, Math.max(0, parseInt($('#setLevel').value, 10) || 3));
+  s.ptsMain = Math.max(1, parseInt($('#setPtsMain').value, 10) || 60);
+  s.ptsSide = Math.max(1, parseInt($('#setPtsSide').value, 10) || 25);
+  s.ptsLevel = Math.max(1, parseInt($('#setPtsLevel').value, 10) || 100);
+  s.dropAfter = Math.max(1, parseInt($('#setDropAfter').value, 10) || 3);
+}
+function saveSettings(){
+  readSettings();
+  save();
+  populateSettings();
+  renderAll();
+  toast('设置已保存');
+}
+async function testChat(){
+  const res = $('#chatTestResult');
+  res.className = 'test-result';
+  res.textContent = '正在测试…';
+  saveSettings();
+  const cfg = state.settings.chat;
+  if (!cfg.key){ res.className = 'test-result err'; res.textContent = '请先填写 API Key'; return; }
+  try {
+    const base = cfg.baseUrl.replace(/\/+$/, '');
+    const r = await fetch(base + '/chat/completions', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + cfg.key },
+      body: JSON.stringify({ model:cfg.model, messages:[{ role:'user', content:'Reply with exactly: OK' }], max_tokens:5, temperature:0 })
+    });
+    if (!r.ok){ let t=''; try{ t = await r.text(); }catch(e){} throw new Error('HTTP ' + r.status + ' ' + t.slice(0, 120)); }
+    const d = await r.json();
+    const txt = d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content;
+    res.className = 'test-result ok';
+    res.textContent = '✅ 连接成功，模型回复：' + (txt || '(空)');
+  } catch(e){
+    res.className = 'test-result err';
+    res.textContent = '❌ 测试失败：' + e.message + '（若提示跨域或网络错误，请确认 key 与 Base URL，或换用允许浏览器跨域的服务商）';
+  }
+}
+async function testVoice(){
+  const res = $('#voiceTestResult');
+  res.className = 'test-result';
+  res.textContent = '正在尝试朗读…';
+  saveSettings();
+  try {
+    await speak('Hello! This is a test of your voice service.');
+    res.className = 'test-result ok';
+    res.textContent = '✅ 已发起朗读。若没听到声音，通常是接口跨域或 key 无效，已自动回退浏览器发音。';
+  } catch(e){
+    res.className = 'test-result err';
+    res.textContent = '❌ 失败：' + e.message;
+  }
+}
+
+/* ================= 版本与更新检查 ================= */
+function pageUrl(){
+  return (typeof location !== 'undefined' && location.href) ? location.href.split('#')[0].split('?')[0] : '';
+}
+async function checkUpdate(manual){
+  const res = $('#updateResult');
+  if (manual && res){ res.className = 'test-result'; res.textContent = '正在检查更新…'; }
+  try {
+    if (!pageUrl() || location.protocol === 'file:')
+      throw new Error('本机文件模式无法检查更新，部署到网站后即可使用');
+    const r = await fetch(pageUrl() + '?v=' + Date.now(), { cache:'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const text = await r.text();
+    const m = text.match(/<meta name="app-version" content="([^"]+)"/);
+    const remote = m ? m[1] : '';
+    if (!remote) throw new Error('未找到版本信息');
+    if (remote !== APP_VERSION){
+      // 发现新版：自动刷新页面；30 秒内只自动刷新一次，避免缓存导致死循环
+      let willReload = false;
+      try {
+        const rk = 'oral_update_reload';
+        const last = parseInt(localStorage.getItem(rk) || '0', 10);
+        const now = Date.now();
+        if (now - last > 30000){ localStorage.setItem(rk, String(now)); willReload = true; }
+      } catch(e){}
+      const msg = willReload
+        ? '📦 发现新版本 v' + remote + '，正在自动刷新…'
+        : '📦 发现新版本 v' + remote + '，自动刷新被缓存拦截，请手动刷新页面';
+      if (manual && res){ res.className = 'test-result ok'; res.textContent = msg; }
+      toast(msg);
+      if (willReload){
+        setTimeout(() => {
+          if (typeof location !== 'undefined' && location.reload) location.reload();
+        }, 1200);
+      }
+      return true;
+    }
+    if (manual && res){ res.className = 'test-result ok'; res.textContent = '✅ 已是最新版本 v' + APP_VERSION; }
+    return false;
+  } catch(e){
+    if (manual && res){ res.className = 'test-result err'; res.textContent = '检查失败：' + e.message; }
+    return false;
+  }
+}
+
+/* ================= 数据导出 / 导入 / 清空 ================= */
+function exportData(){
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'oral-workbench-' + dateStr() + '.json';
+  a.click();
+}
+function importData(file){
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const d = JSON.parse(fr.result);
+      if (!d.settings || !d.level) throw new Error('bad');
+      state = normalize(d);
+      save();
+      renderAll();
+      toast('数据已导入');
+    } catch(e){ toast('导入失败：文件格式不正确', 'err'); }
+  };
+  fr.readAsText(file);
+}
+function resetAll(){
+  showModal('确认清空？', '将删除全部打卡记录、段位与设置，且无法恢复。建议先导出备份。', [
+    { label:'取消' },
+    { label:'确认清空', cls:'danger', cb:() => {
+      localStorage.removeItem(LS_KEY);
+      state = defaultState();
+      save();
+      renderAll();
+      toast('数据已清空');
+    }}
+  ]);
+}
+
+/* ================= 段位 / 记录 / 说明 ================= */
+function renderLevel(){
+  const li = levelInfo();
+  $('#lvBig').textContent = li.big;
+  $('#lvSub').textContent = li.sub;
+  $('#lvName').textContent = '段位 ' + li.lv;
+  $('#lvDesc').textContent = LEVEL_DESC[li.big];
+  $('#lvBar').style.width = Math.min(100, state.level.progress / state.settings.ptsLevel * 100) + '%';
+  $('#lvBarText').textContent = state.level.progress + ' / ' + state.settings.ptsLevel + ' 进度';
+  $('#lvNext').textContent = li.next ? '距 ' + li.next + ' 还差 ' + li.remain + ' 进度' : '已达最高段位 C2-3';
+  $('#lvRules').textContent =
+    '· 完成主线：+' + state.settings.ptsMain + ' 进度（同时打卡成功）\n' +
+    '· 完成 1 条支线：+' + state.settings.ptsSide + ' 进度（加分项，不做不掉段）\n' +
+    '· 每小阶需要 ' + state.settings.ptsLevel + ' 进度，满则升 1 小阶\n' +
+    '· 连续 ' + state.settings.dropAfter + ' 天未完成主线：掉 1 小阶，进度清零\n' +
+    '· 段位范围：A0-1（最低）→ C2-3（最高），初始可在设置页自评\n' +
+    '· 私密原则：只和昨天的自己比，不显示任何他人数据';
+  const hl = $('#lvHistoryList');
+  const list = state.levelHistory.slice(-5).reverse();
+  hl.textContent = list.length
+    ? list.map(h => h.date + '  ' + h.from + ' → ' + h.to).join('\n')
+    : '还没有段位变动记录，完成主线即可积累。';
+}
+function renderHistory(){
+  $('#histStreak').textContent = calcStreak();
+  $('#histTotal').textContent = calcTotal();
+  $('#histWeek').textContent = weekDone();
+  renderWeekGrid($('#histWeekGrid'));
+  const el = $('#histSummaries'); el.innerHTML = '';
+  let any = false;
+  for (let i = 0; i < 7; i++){
+    const d = addDays(dateStr(), -i);
+    const r = state.records[d];
+    if (r && r.mainDone){
+      any = true;
+      const card = document.createElement('div');
+      card.className = 'sum-card';
+      card.innerHTML = '<div class="sum-date">' + d + (r.summary ? '' : ' · 无总结') + '</div>' +
+        '<div class="pre">' + (r.summary ? renderText(r.summary) : '（当天直接打卡，未生成总结）') + '</div>';
+      el.appendChild(card);
+    }
+  }
+  if (!any) el.innerHTML = '<p class="hint">还没有打卡记录。完成今天的主线，就会出现在这里。</p>';
+}
+function showHelp(){
+  showModal('使用说明', 
+    '<ul>' +
+    '<li><b>主线任务（口语对话）</b>是每天唯一必做任务，完成即打卡成功、+60 进度。</li>' +
+    '<li><b>支线任务</b>（单词卡 / 听读 / 跟读）是加分项：每条 +25 进度，不做不掉段、不算断签，可"稍后完成"当天补做。</li>' +
+    '<li><b>段位</b>：A0-1 → C2-3，每小阶需 100 进度；连续 3 天未完成主线会掉 1 小阶。</li>' +
+    '<li><b>纠错方式</b>：AI 老师优先挑"不地道"的表达，按"你说 → 更好地说 → 为什么"指出 1-3 点，不苛责小语法。</li>' +
+    '<li><b>语音</b>：优先使用 Qwen 语音识别与朗读（免费），失败时自动回退浏览器自带语音，再不行就打字。</li>' +
+    '<li><b>数据</b>：全部保存在本机浏览器，可在设置页导出 / 导入备份。</li>' +
+    '<li><b>手机与更新</b>：把本文件部署到静态托管后，手机打开同一网址即可使用；我更新文件后，手机上刷新或点"检查更新"即可同步。</li>' +
+    '</ul>');
+}
+
+/* ================= 初始化与事件绑定 ================= */
+function init(){
+  state = load();
+  if (!state){ state = defaultState(); save(); }
+  applyDropIfNeeded();
+  renderAll();
+
+  // 全局事件委托（动态元素）
+  document.addEventListener('click', e => {
+    const modeBtn = e.target.closest('.mode-btn');
+    if (modeBtn){ selectMode(modeBtn.dataset.mode); return; }
+    const tab = e.target.closest('.tab');
+    if (tab){ switchView(tab.dataset.view); return; }
+    const rep = e.target.closest('[data-rep]');
+    if (rep){ const p = rep.dataset.rep.split('-'); handleRep(p[0], parseInt(p[1], 10)); return; }
+    const ws = e.target.closest('[data-wordspeak]');
+    if (ws){ speak(wordState.words[wordState.pos].ex); return; }
+    const p1c = e.target.closest('.p1-chip');
+    if (p1c){ showP1(parseInt(p1c.dataset.p1, 10)); return; }
+    if (e.target.id === 'modalMask') hideModal();
+  });
+
+  // 顶栏
+  $('#btnHelp').onclick = showHelp;
+  $('#btnSettings').onclick = () => switchView('settings');
+
+  // 首页
+  $('#btnStartMain').onclick = startMain;
+  $('#btnGoLevel').onclick = () => switchView('level');
+  $('#btnGoSide').onclick = () => switchView('side');
+
+  // 主线对话
+  $('#btnSend').onclick = sendMessage;
+  $('#inputText').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+  });
+  $('#btnMic').onclick = onMic;
+  $('#btnEndChat').onclick = endChat;
+  $('#btnCheckin').onclick = completeMain;
+
+  // 支线
+  $('#btnFlipWord').onclick = () => {
+    const back = $('#wordBack');
+    back.classList.toggle('hidden');
+    $('#btnFlipWord').textContent = back.classList.contains('hidden') ? '显示答案' : '隐藏答案';
+  };
+  $('#btnWordKnow').onclick = () => markWord(true);
+  $('#btnWordDunno').onclick = () => markWord(false);
+  $('#btnFinishCards').onclick = () => completeSide('cards');
+  $('#deferCards').onclick = () => deferSide('cards');
+  $('#btnReadPassage').onclick = () => speak(dailyPick(dateStr(), PASSAGES).en);
+  $('#btnFinishInput').onclick = () => completeSide('input');
+  $('#deferInput').onclick = () => deferSide('input');
+  $('#btnFinishRepeat').onclick = () => completeSide('repeat');
+  $('#deferRepeat').onclick = () => deferSide('repeat');
+
+  // 段位 / 记录
+  $('#btnGoSelfCheck').onclick = () => switchView('settings');
+  $('#btnP1Report').onclick = () => showP1(3);
+
+  // 设置
+  $('#btnSaveSettings').onclick = saveSettings;
+  $('#btnTestChat').onclick = testChat;
+  $('#btnTestVoice').onclick = testVoice;
+  $('#btnCheckUpdate').onclick = () => checkUpdate(true);
+  $('#btnResetVoice').onclick = () => {
+    const v = defaultState().settings.voice;
+    $('#setVoiceBase').value = v.baseUrl;
+    $('#setVoiceModel').value = v.model;
+    $('#setVoiceName').value = v.voice;
+    $('#chkQwenASR').checked = true;
+    $('#chkQwenTTS').checked = true;
+    toast('已恢复默认语音配置（key 保留，仅保存在本机）');
+  };
+  $('#btnExport').onclick = exportData;
+  $('#fileImport').addEventListener('change', e => { if (e.target.files[0]) importData(e.target.files[0]); e.target.value = ''; });
+  $('#btnResetAll').onclick = resetAll;
+
+  // 跨天时重新计算掉段
+  document.addEventListener('visibilitychange', () => { applyDropIfNeeded(); renderAll(); });
+
+  if (!state.welcomed){ state.welcomed = true; save(); showHelp(); }
+  setTimeout(() => { checkUpdate(false); }, 1200);   // 静默检查：发现新版才提示
+}
+function selectMode(m){
+  const r = ensureRecord();
+  r.mode = m;
+  save();
+  renderHome();
+  toast('今日模式：' + MODES[m].name + '（' + MODES[m].desc + '）');
+}
+function showP1(i){
+  const item = P1[i];
+  showModal(item.icon + ' ' + item.name,
+    '<p class="hint">' + esc(item.desc) + '</p><p class="hint">该功能属于 P1 规划，将在第二版上线，目前仅为占位入口。</p>');
+}
+
+document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>
