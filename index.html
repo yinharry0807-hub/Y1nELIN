@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<meta name="app-version" content="1.0.9">
+<meta name="app-version" content="1.0.10">
 <title>英语口语工作台 · 影子英语老师</title>
 <style>
 /* ================= 基础变量与主题（深色 · 克制的高级感） ================= */
@@ -422,7 +422,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
 
     <div class="composer card">
       <div class="composer-row voice-row" id="voiceMode">
-        <button id="btnTalk" class="btn talk">🎤 按住说话</button>
+        <button id="btnTalk" class="btn talk">🎤 点击说话</button>
         <button id="btnType" class="btn ghost small">✏️ 打字</button>
       </div>
       <div class="composer-row hidden" id="typeMode">
@@ -441,8 +441,8 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
   <!-- ================= 日常对话页（随意聊天，不打卡不教学） ================= -->
   <section class="view" id="view-daily">
     <div class="main-head">
-      <h2>日常对话 · 随便聊聊</h2>
-      <p class="hint">不限主线、不打卡、不纠错加压——像和朋友聊天一样随便说，按住说话或打字都行。选个话题开始，或直接开聊。</p>
+      <h2>日常对话 · 严格教练模式</h2>
+      <p class="hint">像电话一样你一句我一句：点一下开始说话、再点一下结束。严格教练模式——全程英语、立刻纠错、逼你多说，不哄不迁就。选个主题开始，或直接开聊。</p>
       <div class="row" id="dailyTopics"></div>
       <div class="row"><button id="btnDailyNew" class="btn ghost small">🔄 清空重来</button></div>
     </div>
@@ -451,7 +451,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
 
     <div class="composer card">
       <div class="composer-row voice-row" id="dailyVoiceMode">
-        <button id="btnDailyTalk" class="btn talk">🎤 按住说话</button>
+        <button id="btnDailyTalk" class="btn talk">🎤 点击说话</button>
         <button id="btnDailyType" class="btn ghost small">✏️ 打字</button>
       </div>
       <div class="composer-row hidden" id="dailyTypeMode">
@@ -868,19 +868,25 @@ const TOPICS_EXTRA = [
   { lv:'B2', en:'Comparing two options', zh:'比较两个选择', scene:'比较两个方案并说明理由。', starter:'Let me compare the two options for you.' },
   { lv:'B2', en:'Persuading someone', zh:'说服别人', scene:'试着说服朋友采纳你的建议。', starter:'Trust me, this plan will save us time.' },
   { lv:'B2', en:'Handling a difficult conversation', zh:'处理困难对话', scene:'需要表达不满又不伤和气。', starter:'I want to be honest with you about something.' },
-  { lv:'B2', en:'Discussing the news', zh:'讨论新闻时事', scene:'深入讨论一条新闻。', starter:'What is your take on this news?' }
+  { lv:'B2', en:'Discussing the news', zh:'讨论新闻时事', scene:'深入讨论一条新闻。', starter:'What is your take on this news?' },
+  { lv:'C1', en:'Explaining a complex process', zh:'解释复杂流程', scene:'向别人解释一个复杂的流程。', starter:'Let me walk you through how this works step by step.' },
+  { lv:'C1', en:'Debating work-life balance', zh:'辩论工作与生活平衡', scene:'深入讨论并给出有论据的观点。', starter:'Is a perfect work-life balance really possible?' },
+  { lv:'C1', en:'Discussing globalization', zh:'讨论全球化', scene:'聊全球化对生活和工作的影响。', starter:'Has globalization been good for ordinary people?' },
+  { lv:'C1', role:'客户', en:'Handling a negotiation', zh:'处理一场谈判', scene:'客户对你的方案有意见，双方谈判。', starter:'I understand your concern, but let me explain our position.' },
+  { lv:'C2', en:'Arguing a case politely', zh:'礼貌而有力地论证', scene:'为一个有争议的观点辩护，语气礼貌但有力。', starter:'I see your point, but I would argue the opposite.' },
+  { lv:'C2', en:'Presenting an idea to executives', zh:'向高层汇报想法', scene:'向决策者清晰有力地推销你的想法。', starter:'Let me present the core idea and why it matters.' }
 ];
 TOPICS.push(...TOPICS_EXTRA);
 
 /* —— 难度与分类工具 —— */
 function topicLevelOf(t){ return t.lv || TOPIC_LV[t.en] || 'A1'; }
 function userCefr(){ return LEVELS[state.level.index].split('-')[0]; }
-/* 难度自适应：按当前段位取话题难度；连续打卡每满 3 天升 1 档（最多升 2 档，封顶 B2） */
+/* 难度自适应：按当前段位取话题难度；连续打卡每满 3 天升 1 档（最多升 2 档，可到 C2） */
 function topicDifficulty(){
   const order = ['A0','A1','A2','B1','B2','C1','C2'];
   let idx = Math.max(1, order.indexOf(userCefr()));
   const boost = Math.min(2, Math.floor(calcStreak() / 3));
-  return order[Math.min(idx + boost, 4)];
+  return order[Math.min(idx + boost, 6)];
 }
 function topicsForDifficulty(lv){
   const pool = TOPICS.filter(t => topicLevelOf(t) === lv);
@@ -1492,7 +1498,10 @@ function SYSTEM(topic){
   '【你说】我的原话\n【更好地说】母语者会怎么说的版本\n【为什么】一句话点明区别\n' +
   '4. 纠错优先级：地道自然 > 用词准确 > 短语搭配 > 句子结构 > 语法。不影响理解的小语法错误不要提。\n' +
   '5. 每次回复 2-4 句英文，结尾自然地问一个问题，让我继续往下说。\n' +
-  '6. 收到"结束/复盘"指令时，立刻用中文输出【今日复盘】：先给一句总体鼓励；再挑 2-3 个"可以说得更地道"的点，每条严格按：你说 → 更好地说 → 为什么；然后附【地道表达】2-3 个本话题高频短语或习语，每个格式：短语（中文意思）—— 使用场景例句（英文一句）；最后给一句明天的建议。总长控制在 260 字内。';
+  '6. 收到"结束/复盘"指令时，用中文输出【今日复盘】：先给一句"Again, but this time..."的重说建议（挑本段最值得重说的一句，说明这次怎么改）；再挑 2-3 个"可以说得更地道"的点，每条严格按：你说 → 更好地说 → 为什么；然后附【地道表达】2-3 个本话题高频短语或习语，每个格式：短语（中文意思）—— 使用场景例句（英文一句）；最后给一句明天的建议。总长控制在 280 字内。\n' +
+  '7. 你是我的教练，风格严格、直接、不哄、不迁就：我每说完一段，先指出最严重的 1-2 个错误并让我当场重说正确版本，再继续话题；同一个错误第三次出现时，罚我用正确句式当场造 3 个新句子。\n' +
+  '8. 我至少要说一段 5 句以上的连续英语；我只回短句时，追问 "Give me more. Explain why. Give me an example."。\n' +
+  '9. 我不会的词不许用中文代替，逼我用英语解释，然后给我正确词汇，让我用正确词汇重说整个句子。';
 }
 
 /* 日常闲聊：快速起话题 */
@@ -1506,18 +1515,29 @@ const DAILY_TOPICS = [
   { en:'Tech', opener:'Do you follow new tech stuff? That new phone looks amazing, but the price… wow.' },
   { en:'Anything', opener:'Alright, no topic today — just chat. What is on your mind?' }
 ];
-/* 日常闲聊的系统提示词：像老朋友聊天，不纠错、不教学 */
+/* 日常对话的系统提示词：严格教练模式（基于用户指定的训练铁律） */
 function DAILY_SYSTEM(){
   const topic = state.dailyChat && state.dailyChat.topic;
-  return '你是我的英语口语陪练"影子老师"，现在是【日常闲聊】模式：像老朋友一样轻松自然地聊天，不限话题、不打卡、不教学。\n' +
-  (topic ? '【今日闲聊话题】' + topic + '\n' : '') +
-  '【规则】\n' +
-  '1. 我说英文时你用英文自然回应；我明显说中文时，你可以先用中文回应，再顺带给一句地道英文说法。\n' +
-  '2. 像真人朋友发微信语音一样聊天：口语化、有情绪、有节奏（多用 well / you know / actually / hmm / oh / gonna / wanna / wait，感叹如 Wow! / Really? / Haha，停顿用 … / ! / ?），长短句和问句交替，偶尔自问自答，避免任何书面语和机械腔。\n' +
-  '3. 不主动纠错、不教学、不打断；除非我明确问"这样说对吗 / 怎么说更好"。\n' +
-  '4. 我会一口气说一段话，请等我全部说完再回应。\n' +
-  '5. 每次回复 2-4 句英文，结尾自然地问一句，让对话继续。\n' +
-  '6. 话题随便换，我提什么就聊什么，也可以聊今天发生的事、感受和看法。';
+  return '从现在开始，你是我的英语教练。你的风格：严格、直接、不哄我、不迁就。我要压力，舒适区学不会语言。\n' +
+  (topic ? '【今日主题】' + topic + '\n' : '') +
+  '【我的情况】22 岁，中国广东人，英语目前只能应付考试阅读，口语基本开不了口，目标是和外国人日常无障碍交流、任何话题都能聊。\n' +
+  '【铁律】\n' +
+  '1. 全程英语，除非我卡住超过 8 秒——先让我自己挣扎，实在不行才用中文提示一个关键词，然后让我继续用英语说。\n' +
+  '2. 我犯错误时（语法、用词、中式英语）：等我说完一段后立刻打断纠正，让我当场重复正确版本，然后继续；同一个错误最多纠正两次，第三次再犯，罚我用正确句式当场造三个新句子。\n' +
+  '3. 每次对话我必须至少说一段超过 5 句的连续英语；我只回短句时，你要追问："Give me more. Explain why. Give me an example."\n' +
+  '4. 词汇不会时不许我用中文代替，逼我用英语解释我不会的词，然后给我正确词汇，让我用正确词汇重说整个句子。\n' +
+  '5. 对话中至少一次让我重说："Again, but this time..."，并指出这次要改进的地方。\n' +
+  '【施压】\n' +
+  '- 不要只聊"今天做了什么"，会突然抛我不熟悉的话题，逼我即时组织语言回应。\n' +
+  '- 定期扮演高压角色（客户、面试官、海关官员、酒店前台、房东、争执对象）制造真实对话压力。\n' +
+  '- 会问我观点题："What is your opinion on...?" 逼我用不熟悉的词汇表达观点并给出理由。\n' +
+  '- 我逃避复杂回答时，把我拽回来，不许我用简单句糊弄过去。\n' +
+  '【会话结构】\n' +
+  '1. 热身：用英语问我一件今天真实发生的事（唯一轻松环节）。\n' +
+  '2. 主训练：围绕主题或高压场景对话。\n' +
+  '3. 纠错+重练：挑出 2-3 个最严重问题，让我重说重练。\n' +
+  '4. 收尾：告诉我今天进步最大的一处和依然最弱的一处，给我 5 个必须记住的词或表达，并预告下次主题。\n' +
+  '【技术规则】我会一口气说一段（可能几句到十几句），请等我全部说完再回应；每次回复 2-4 句英文，结尾自然问一句让我继续说。';
 }
 async function chatRequest(msgs, maxTokens){
   const cfg = state.settings.chat;
@@ -1718,9 +1738,10 @@ function renderMain(){
   $('#endHint').textContent = r.mainDone ? '今日已完成' : '想停随时可以点结束，老师会给出今日复盘。';
   $('#btnCheckin').classList.toggle('hidden', !!r.mainDone);
   $('#btnCheckin').disabled = busy;
-  $$('.composer').forEach(el => el.style.display = r.mainDone ? 'none' : '');
+  const mainComposer = document.querySelector('#view-main .composer');
+  if (mainComposer) mainComposer.style.display = r.mainDone ? 'none' : '';
   updateControls();
-  $('#micHint').textContent = '按住说话：按住开始录音、松开自动识别并发送；AI 回复流式显示并立即分段朗读。也可以点 ✏️ 打字。';
+  $('#micHint').textContent = '点击说话：点一下开始录音、再点一下结束并自动发送；AI 回复流式显示并立即分段朗读。也可以点 ✏️ 打字。';
 }
 
 /* ================= 日常闲聊 ================= */
@@ -1732,7 +1753,7 @@ function renderDaily(){
     const p = document.createElement('p');
     p.className = 'hint';
     p.style.textAlign = 'center';
-    p.textContent = '还没有对话——选一个话题开始，或直接按住说话 / 打字开聊。';
+    p.textContent = '还没有对话——选一个主题开始，或直接点击说话 / 打字开聊。';
     box.appendChild(p);
   }
   msgs.forEach(m => {
@@ -1744,7 +1765,7 @@ function renderDaily(){
   box.scrollTop = box.scrollHeight;
   updateControls();
   const hint = $('#dailyMicHint');
-  if (hint) hint.textContent = '按住说话：按住开始录音、松开自动识别并发送；AI 回复流式显示并立即分段朗读。也可以点 ✏️ 打字。';
+  if (hint) hint.textContent = '点击说话：点一下开始录音、再点一下结束并自动发送；AI 回复流式显示并立即分段朗读。也可以点 ✏️ 打字。';
 }
 function renderCurrentChat(){
   if (activeChannel === 'daily') renderDaily();
@@ -2335,7 +2356,7 @@ async function checkMicPermission(){
 function setMicUI(rec){
   const el = chatEls();
   if (el.talk){
-    el.talk.textContent = rec ? '⏹ 松开结束' : '🎤 按住说话';
+    el.talk.textContent = rec ? '⏹ 点击结束' : '🎤 点击说话';
     el.talk.classList.toggle('recording', !!rec);
   }
   if (!rec && micTarget && micTarget.row != null && repeatState) renderRepeatList();
@@ -2349,19 +2370,18 @@ function putTranscript(text){
   }
 }
 
-/* 主线：按住说话 */
-function startTalk(){
+/* 点击说话：点一下开始录音，再点一下结束并自动发送（电话式对话） */
+function toggleTalk(){
   if (busy){ toast('老师正在输入，请稍等', 'err'); return; }
+  if (capture){ captureStop(); return; }
   if (activeChannel === 'main'){
     const r = ensureRecord();
     if (r.mainDone){ toast('今日主线已完成', 'err'); return; }
   }
-  if (capture) return;
   micTarget = null;
   setMicUI(true);
   captureStart(text => putTranscript(text));
 }
-function stopTalk(){ captureStop(); }
 
 /* 支线跟读：点击开始 / 再点停止 */
 async function onMic(){
@@ -2598,12 +2618,12 @@ function renderHistory(){
 function showHelp(){
   showModal('使用说明', 
     '<ul>' +
-    '<li><b>主线（实时口语对话）</b>：AI 先抛出今日话题，你按住"按住说话"说一句、松开自动识别并发送，AI 回一句并自动朗读，像微信聊天一样。聊完点"结束本次对话"，AI 生成【今日复盘】（你说 → 更好地说 → 为什么）。完成主线即打卡成功、+60 进度。</li>' +
-    '<li><b>日常对话</b>：顶栏"日常对话"是随意聊天模式，不打卡、不纠错、不教学，像和朋友聊天，按住说话或打字都行。</li>' +
+    '<li><b>主线（实时口语对话）</b>：AI 先抛出今日话题，你点"点击说话"开始录音、再点一下结束并自动发送，AI 回一句并自动朗读，像打电话一样。聊完点"结束本次对话"，AI 生成【今日复盘】（你说 → 更好地说 → 为什么）。完成主线即打卡成功、+60 进度。</li>' +
+    '<li><b>日常对话</b>：顶栏"日常对话"是严格教练训练模式——全程英语、立刻纠错、逼你说满 5 句、有压力测试和观点题，不哄不迁就。点一下说话、再点一下结束，或打字。</li>' +
     '<li><b>支线任务</b>（单词卡 / 听读 / 跟读）是加分项：每条 +25 进度，不做不掉段、不算断签，可"稍后完成"当天补做。</li>' +
     '<li><b>段位</b>：A0-1 → C2-3，每小阶需 100 进度；连续 3 天未完成主线会掉 1 小阶。</li>' +
     '<li><b>纠错方式</b>：AI 老师优先挑"不地道"的表达，按"你说 → 更好地说 → 为什么"指出 1-3 点，不苛责小语法。</li>' +
-    '<li><b>语音</b>：按住说话录音，Whisper 优先识别（需在设置填 Whisper Key），失败自动回退浏览器语音识别；AI 回复流式显示并立即分段朗读，也可以打字。</li>' +
+    '<li><b>语音</b>：点击"点击说话"开始录音、再点一下结束并自动发送；Whisper 优先识别（需在设置填 Whisper Key），失败自动回退浏览器语音识别；AI 回复流式显示并立即分段朗读，也可以打字。</li>' +
     '<li><b>发音</b>：朗读默认走 DeepSeek 接口（服务商不支持会自动回退浏览器朗读，保证有声）；仍无声时检查设备音量与浏览器语音设置。</li>' +
     '<li><b>环境要求</b>：用 Chrome 或 Edge 打开并允许麦克风；若双击 file:// 打开无法录音，请用本地服务器：在 index.html 所在文件夹运行 python -m http.server 8000，然后访问 http://localhost:8000。</li>' +
     '<li><b>数据</b>：全部保存在本机浏览器，可在设置页导出 / 导入备份。</li>' +
@@ -2647,13 +2667,8 @@ function init(){
   $('#inputText').addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
   });
-  // 按住说话：按下录音，松开识别并自动发送
-  const talk = $('#btnTalk');
-  talk.addEventListener('pointerdown', e => { e.preventDefault(); startTalk(); });
-  talk.addEventListener('pointerup', e => { e.preventDefault(); stopTalk(); });
-  talk.addEventListener('pointerleave', () => stopTalk());
-  talk.addEventListener('pointercancel', () => stopTalk());
-  talk.addEventListener('contextmenu', e => e.preventDefault());
+  // 点击说话：点一下开始录音，再点一下结束并自动发送
+  $('#btnTalk').onclick = toggleTalk;
   $('#btnType').onclick = () => {
     $('#voiceMode').classList.add('hidden');
     $('#typeMode').classList.remove('hidden');
@@ -2663,13 +2678,8 @@ function init(){
     $('#typeMode').classList.add('hidden');
     $('#voiceMode').classList.remove('hidden');
   };
-  // 日常对话：同样支持按住说话与打字
-  const talkDaily = $('#btnDailyTalk');
-  talkDaily.addEventListener('pointerdown', e => { e.preventDefault(); startTalk(); });
-  talkDaily.addEventListener('pointerup', e => { e.preventDefault(); stopTalk(); });
-  talkDaily.addEventListener('pointerleave', () => stopTalk());
-  talkDaily.addEventListener('pointercancel', () => stopTalk());
-  talkDaily.addEventListener('contextmenu', e => e.preventDefault());
+  // 日常对话：同样支持点击说话与打字
+  $('#btnDailyTalk').onclick = toggleTalk;
   $('#btnDailyType').onclick = () => {
     $('#dailyVoiceMode').classList.add('hidden');
     $('#dailyTypeMode').classList.remove('hidden');
