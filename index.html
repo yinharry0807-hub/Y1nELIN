@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<meta name="app-version" content="1.0.6">
+<meta name="app-version" content="1.0.9">
 <title>英语口语工作台 · 影子英语老师</title>
 <style>
 /* ================= 基础变量与主题（深色 · 克制的高级感） ================= */
@@ -221,7 +221,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
 .side-item{display:flex;flex-direction:column}
 .side-item .hint{flex:1}
 .word-box{margin:8px 0}
-.word-filters{display:flex;gap:8px;margin-bottom:8px}
+.word-filters{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .word-filters select{flex:1;min-width:0;font-size:12.5px;padding:7px 8px}
 .word-front{
   font-size:26px;font-weight:700;text-align:center;padding:20px 10px;letter-spacing:.02em;
@@ -473,12 +473,20 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
         <h3>📇 单词卡片 <span class="tag" id="cardsDone">未完成</span></h3>
         <p class="hint">约 5 分钟 · 睡前友好</p>
         <div class="word-filters">
+          <select id="wordCountFilter" title="每组单词数量">
+            <option value="5">每组 5 个</option>
+            <option value="10">每组 10 个</option>
+            <option value="15">每组 15 个</option>
+            <option value="20">每组 20 个</option>
+          </select>
           <select id="wordLvFilter">
             <option value="">难度全部</option>
             <option value="A1">A1 入门</option>
             <option value="A2">A2 基础</option>
             <option value="B1">B1 进阶</option>
             <option value="B2">B2 高阶</option>
+            <option value="C1">C1 高阶</option>
+            <option value="C2">C2 高阶</option>
           </select>
           <select id="wordCatFilter">
             <option value="">场景全部</option>
@@ -586,6 +594,16 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
     <div class="grid2">
       <div class="card">
         <h3>AI 对话 · DeepSeek</h3>
+        <div class="field">
+          <label>服务商预设（自动填 Base URL 和模型，Key 各自填写）</label>
+          <select id="setChatPreset">
+            <option value="deepseek">DeepSeek（当前）</option>
+            <option value="qwen">通义千问 Qwen（免费额度）</option>
+            <option value="zhipu">智谱 GLM-4-Flash（免费）</option>
+            <option value="kimi">Kimi Moonshot（免费额度）</option>
+            <option value="custom">自定义</option>
+          </select>
+        </div>
         <div class="field"><label>Base URL</label><input id="setChatBase" placeholder="https://api.deepseek.com"></div>
         <div class="field"><label>API Key</label><input id="setChatKey" type="password" placeholder="sk-..."></div>
         <div class="field">
@@ -629,6 +647,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
         <div class="check"><input type="checkbox" id="chkAutoTTS"><label for="chkAutoTTS">AI 回复后自动朗读（浏览器语音）</label></div>
         <div class="row">
           <button id="btnTestVoice" class="btn">测试朗读</button>
+          <button id="btnTestAsr" class="btn">测试识别</button>
           <button id="btnResetVoice" class="btn ghost small">恢复默认</button>
         </div>
         <div id="voiceTestResult" class="test-result"></div>
@@ -1116,7 +1135,38 @@ const WORDS = [
   { w:'opportunity', p:'/ˌɑːpərˈtuːnəti/', zh:'机会', ex:'This is a good opportunity.', exZh:'这是个好机会。', lv:'B1', cat:'通用' },
   { w:'suggestion', p:'/səˈdʒestʃən/', zh:'建议', ex:'Thanks for your suggestion.', exZh:'谢谢你的建议。', lv:'B1', cat:'通用' },
   { w:'culture', p:'/ˈkʌltʃər/', zh:'文化', ex:'I love learning about new cultures.', exZh:'我喜欢了解新文化。', lv:'B1', cat:'通用' },
-  { w:'habit', p:'/ˈhæbɪt/', zh:'习惯', ex:'Reading is a good habit.', exZh:'阅读是好习惯。', lv:'A2', cat:'通用' }
+  { w:'habit', p:'/ˈhæbɪt/', zh:'习惯', ex:'Reading is a good habit.', exZh:'阅读是好习惯。', lv:'A2', cat:'通用' },
+  /* —— 高阶词汇（C1/C2） —— */
+  { w:'appreciate', p:'/əˈpriːʃieɪt/', zh:'感激 / 欣赏', ex:'I really appreciate your help.', exZh:'我真的很感激你的帮助。', lv:'C1', cat:'通用' },
+  { w:'anticipate', p:'/ænˈtɪsɪpeɪt/', zh:'预期 / 预料', ex:'We anticipate a busy weekend.', exZh:'我们预计周末会很忙。', lv:'C1', cat:'通用' },
+  { w:'convenient', p:'/kənˈviːniənt/', zh:'方便的', ex:'This location is very convenient.', exZh:'这个位置很方便。', lv:'C1', cat:'通用' },
+  { w:'efficient', p:'/ɪˈfɪʃnt/', zh:'高效的', ex:'This process is much more efficient.', exZh:'这个流程高效多了。', lv:'C1', cat:'工作' },
+  { w:'negotiate', p:'/nɪˈɡoʊʃieɪt/', zh:'谈判 / 协商', ex:'We need to negotiate the price.', exZh:'我们需要谈一下价格。', lv:'C1', cat:'购物' },
+  { w:'perspective', p:'/pərˈspektɪv/', zh:'视角 / 观点', ex:'Try to see it from my perspective.', exZh:'试着从我的角度看。', lv:'C1', cat:'通用' },
+  { w:'compensate', p:'/ˈkɑːmpenseɪt/', zh:'补偿', ex:'They will compensate you for the delay.', exZh:'他们会为延误补偿你。', lv:'C1', cat:'通用' },
+  { w:'substantial', p:'/səbˈstænʃl/', zh:'大量的 / 可观的', ex:'We saved a substantial amount of money.', exZh:'我们省了一大笔钱。', lv:'C1', cat:'通用' },
+  { w:'remarkable', p:'/rɪˈmɑːrkəbl/', zh:'显著的 / 非凡的', ex:'That is a remarkable improvement.', exZh:'这是显著的进步。', lv:'C1', cat:'通用' },
+  { w:'reluctant', p:'/rɪˈlʌktənt/', zh:'不情愿的', ex:'He seemed reluctant to answer.', exZh:'他看起来不太愿意回答。', lv:'C1', cat:'通用' },
+  { w:'straightforward', p:'/ˌstreɪtˈfɔːrwərd/', zh:'直截了当的', ex:'Let me be straightforward with you.', exZh:'我直说了吧。', lv:'C1', cat:'通用' },
+  { w:'overwhelming', p:'/ˌoʊvərˈwelmɪŋ/', zh:'压倒性的', ex:'The support was overwhelming.', exZh:'支持多得令人难以招架。', lv:'C1', cat:'通用' },
+  { w:'sophisticated', p:'/səˈfɪstɪkeɪtɪd/', zh:'复杂精致的', ex:'It is a very sophisticated system.', exZh:'这是个很复杂的系统。', lv:'C1', cat:'科技' },
+  { w:'consequently', p:'/ˈkɑːnsəkwentli/', zh:'因此', ex:'It rained all day; consequently, we stayed in.', exZh:'下了一整天雨，所以我们待在家里。', lv:'C1', cat:'通用' },
+  { w:'inevitably', p:'/ɪnˈevɪtəbli/', zh:'不可避免地', ex:'Change will inevitably come.', exZh:'变化必然会发生。', lv:'C1', cat:'通用' },
+  { w:'deliberately', p:'/dɪˈlɪbərətli/', zh:'故意地', ex:'He deliberately ignored my message.', exZh:'他故意不回我消息。', lv:'C1', cat:'通用' },
+  { w:'eventually', p:'/ɪˈventʃuəli/', zh:'最终', ex:'Eventually, we found the way.', exZh:'最后我们找到了路。', lv:'C1', cat:'通用' },
+  { w:'frequently', p:'/ˈfriːkwəntli/', zh:'频繁地', ex:'They frequently travel abroad.', exZh:'他们经常出国。', lv:'C1', cat:'通用' },
+  { w:'thoroughly', p:'/ˈθɜːrəli/', zh:'彻底地', ex:'Please check it thoroughly.', exZh:'请彻底检查一遍。', lv:'C1', cat:'通用' },
+  { w:'genuinely', p:'/ˈdʒenjuɪnli/', zh:'真诚地', ex:'I am genuinely happy for you.', exZh:'我真心为你高兴。', lv:'C1', cat:'通用' },
+  { w:'articulate', p:'/ɑːrˈtɪkjuleɪt/', zh:'清晰表达', ex:'She can articulate her ideas well.', exZh:'她能清楚表达自己的想法。', lv:'C2', cat:'工作' },
+  { w:'meticulous', p:'/məˈtɪkjələs/', zh:'一丝不苟的', ex:'He is meticulous about details.', exZh:'他对细节一丝不苟。', lv:'C2', cat:'工作' },
+  { w:'pragmatic', p:'/præɡˈmætɪk/', zh:'务实的', ex:'We need a pragmatic solution.', exZh:'我们需要一个务实的方案。', lv:'C2', cat:'工作' },
+  { w:'resilient', p:'/rɪˈzɪliənt/', zh:'有韧性的', ex:'She is very resilient under pressure.', exZh:'她在压力下很有韧性。', lv:'C2', cat:'通用' },
+  { w:'ambiguous', p:'/æmˈbɪɡjuəs/', zh:'模糊的 / 有歧义的', ex:'His answer was deliberately ambiguous.', exZh:'他的回答故意含糊其辞。', lv:'C2', cat:'通用' },
+  { w:'coherent', p:'/koʊˈhɪrənt/', zh:'连贯的', ex:'She gave a coherent explanation.', exZh:'她的解释很连贯。', lv:'C2', cat:'通用' },
+  { w:'plausible', p:'/ˈplɔːzəbl/', zh:'貌似合理的', ex:'It sounds plausible, but I doubt it.', exZh:'听起来合理，但我怀疑。', lv:'C2', cat:'通用' },
+  { w:'scrutinize', p:'/ˈskruːtənaɪz/', zh:'仔细审查', ex:'The report was scrutinized carefully.', exZh:'这份报告被仔细审查过。', lv:'C2', cat:'工作' },
+  { w:'unanimous', p:'/juˈnænɪməs/', zh:'一致同意的', ex:'The decision was unanimous.', exZh:'这个决定是全体一致的。', lv:'C2', cat:'通用' },
+  { w:'unprecedented', p:'/ʌnˈpresɪdentɪd/', zh:'史无前例的', ex:'This is an unprecedented situation.', exZh:'这是史无前例的局面。', lv:'C2', cat:'通用' }
 ];
 
 /* 单词难度/场景元数据：新词自带 lv/cat；旧词按长度与关键词推断 */
@@ -1139,9 +1189,12 @@ function wordMeta(w){
   return { lv:wordLevelOf(w), cat:'通用' };
 }
 function wordLevelOf(w){
-  const len = String(w.w).replace(/[^a-z]/gi, '').length;
-  if (/probably|actually|vegetarian|prescription|appointment|directions|intersection|temperature|furniture|insurance|expensive|exchange|recommend|suggestion|opportunity|experience|challenge|security|delivery|supervisor|presentation/.test(String(w.w).toLowerCase())) return len > 8 ? 'B1' : 'A2';
-  return len <= 4 ? 'A1' : (len <= 7 ? 'A2' : 'B1');
+  const word = String(w.w).toLowerCase();
+  const len = word.replace(/[^a-z]/g, '').length;
+  const adv = /appreciate|anticipate|convenient|efficient|negotiate|perspective|compensate|substantial|remarkable|reluctant|straightforward|overwhelming|sophisticated|consequently|inevitably|deliberately|eventually|frequently|thoroughly|genuinely|articulate|meticulous|pragmatic|resilient|ambiguous|coherent|plausible|scrutinize|unanimous|unprecedented/;
+  if (adv.test(word)) return len >= 11 ? 'C2' : 'C1';
+  if (/probably|actually|vegetarian|prescription|appointment|directions|intersection|temperature|furniture|insurance|expensive|exchange|recommend|suggestion|opportunity|experience|challenge|security|delivery|supervisor|presentation/.test(word)) return len > 8 ? 'B1' : 'A2';
+  return len <= 4 ? 'A1' : (len <= 7 ? 'A2' : (len >= 11 ? 'C1' : 'B1'));
 }
 function filteredWordPool(){
   const lv = $('#wordLvFilter').value;
@@ -1265,7 +1318,8 @@ function defaultState(){
         autoTTS:true      // AI 回复后自动朗读
       },
       departureDate:'',
-      ptsMain:60, ptsSide:25, ptsLevel:100, dropAfter:3
+      ptsMain:60, ptsSide:25, ptsLevel:100, dropAfter:3,
+      wordGroupSize:10   // 单词卡每组数量（5-20）
     },
     level: { index:3, progress:0 },   // 默认 A1-1
     records: {},                       // 日期 -> 当天记录
@@ -1431,7 +1485,7 @@ function SYSTEM(topic){
   roleLine +
   '【我的情况】我是中文母语者，正在提升日常英语口语与流利度，一年后要去美国旅行。\n' +
   '【对话规则】\n' +
-  '0. 语气要求：像真人朋友说话，有情绪、有节奏——可以用省略式（gonna、wanna、can\'t、I\'m）、语气词（well、you know、hmm、oh、actually、like）、感叹与停顿（！、…、?），长短句交替，避免书面语和机械腔。\n' +
+  '0. 语气要求：像真人朋友发微信语音一样说话——口语化、有情绪、有节奏：多用缩写（gonna、wanna、can\'t、I\'m、it\'s）、语气词（well、you know、hmm、oh、actually、like、wait）、感叹（Wow!、Oh no!、Really?、Haha）、停顿（…、!、?），长短句交替，偶尔自问自答，避免任何书面语和机械腔。\n' +
   '1. 我会一口气说一段英文（可能几句到十几句），请等我全部说完再回应，不要中途插话；先自然回应、推进话题，再视情况纠错。\n' +
   '2. 纠错不是每轮都有：只纠正最严重的错误（明显不地道或严重影响理解），不要每句打断；说得好就爽快认可并继续。\n' +
   '3. 每次纠错：先一句总体鼓励，再只挑 1-3 个最值得改的点，严格按三段格式：\n' +
@@ -1459,7 +1513,7 @@ function DAILY_SYSTEM(){
   (topic ? '【今日闲聊话题】' + topic + '\n' : '') +
   '【规则】\n' +
   '1. 我说英文时你用英文自然回应；我明显说中文时，你可以先用中文回应，再顺带给一句地道英文说法。\n' +
-  '2. 像真人一样聊天：有情绪、有节奏、口语化（可以用 well / you know / actually / hmm / oh / gonna / wanna 等），长短句和问句交替，避免书面语和机械腔。\n' +
+  '2. 像真人朋友发微信语音一样聊天：口语化、有情绪、有节奏（多用 well / you know / actually / hmm / oh / gonna / wanna / wait，感叹如 Wow! / Really? / Haha，停顿用 … / ! / ?），长短句和问句交替，偶尔自问自答，避免任何书面语和机械腔。\n' +
   '3. 不主动纠错、不教学、不打断；除非我明确问"这样说对吗 / 怎么说更好"。\n' +
   '4. 我会一口气说一段话，请等我全部说完再回应。\n' +
   '5. 每次回复 2-4 句英文，结尾自然地问一句，让对话继续。\n' +
@@ -1490,7 +1544,7 @@ async function chatRequestStream(msgs, onDelta){
   const res = await fetch(base + '/chat/completions', {
     method:'POST',
     headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + cfg.key },
-    body: JSON.stringify({ model:cfg.model, messages:msgs, temperature:0.7, max_tokens:900, stream:true })
+    body: JSON.stringify({ model:cfg.model, messages:msgs, temperature:0.95, max_tokens:900, stream:true })
   });
   if (!res.ok){
     let t = '';
@@ -1911,9 +1965,12 @@ function renderSide(){
   tag('#inputDone', r.sides.input);
   tag('#repeatDone', r.sides.repeat);
 
-  // 单词卡
-  if (!wordState || wordState.date !== dateStr())
-    wordState = { date:dateStr(), words:dailySlice(dateStr(), filteredWordPool(), 5), pos:0, known:0, answered:0 };
+  // 单词卡（组数可调 5-20，最多不超过当前筛选词库）
+  if (!wordState || wordState.date !== dateStr()){
+    const pool = filteredWordPool();
+    const n = Math.min(20, Math.max(5, parseInt(state.settings.wordGroupSize, 10) || 10), pool.length);
+    wordState = { date:dateStr(), words:dailySlice(dateStr(), pool, n), pos:0, known:0, answered:0 };
+  }
   renderWordCard();
 
   // 听读
@@ -2344,6 +2401,7 @@ function populateSettings(){
   $('#setPtsSide').value = s.ptsSide;
   $('#setPtsLevel').value = s.ptsLevel;
   $('#setDropAfter').value = s.dropAfter;
+  $('#wordCountFilter').value = s.wordGroupSize || 10;
 }
 function readSettings(){
   const s = state.settings;
@@ -2654,8 +2712,12 @@ function init(){
   $('#btnFinishRepeat').onclick = () => completeSide('repeat');
   $('#deferRepeat').onclick = () => deferSide('repeat');
   // 单词卡：难度/场景筛选变化时重新抽词
-  ['wordLvFilter', 'wordCatFilter'].forEach(id => {
-    $('#' + id).addEventListener('change', () => { wordState = null; renderSide(); });
+  ['wordLvFilter', 'wordCatFilter', 'wordCountFilter'].forEach(id => {
+    $('#' + id).addEventListener('change', () => {
+      if (id === 'wordCountFilter') state.settings.wordGroupSize = parseInt($('#wordCountFilter').value, 10) || 10;
+      wordState = null;
+      renderSide();
+    });
   });
 
   // 段位 / 记录
