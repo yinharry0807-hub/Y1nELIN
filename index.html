@@ -4,16 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<meta name="app-version" content="1.0.2">
+<meta name="app-version" content="1.0.3">
 <title>英语口语工作台 · 影子英语老师</title>
 <style>
 /* ================= 基础变量与主题（深色 · 克制的高级感） ================= */
 :root{
-  --bg:#0b0e13; --panel:#10141c; --card:#161b25; --card-hi:#1c2331;
-  --line:#263041; --line-soft:#202836;
-  --text:#e9e7e0; --muted:#98a2b3; --dim:#5f6b7d;
-  --gold:#d3a85c; --gold-soft:#8a6d3b; --gold-deep:#a97f3d;
-  --green:#79b98a; --red:#d97878; --blue:#7ba7d9;
+  --bg:#0a0d17; --panel:#0d1120; --card:#121827; --card-hi:#182034;
+  --line:#26304b; --line-soft:#1e2740;
+  --text:#eceef5; --muted:#98a3bf; --dim:#5a6690;
+  --red:#e62429; --red-deep:#b3181f; --red-soft:rgba(230,36,41,.14);
+  --blue:#2b3784; --blue-bright:#4b5cc4; --blue-soft:rgba(43,55,132,.28);
+  --green:#58c27e; --danger:#e05a5f;
   --r:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -21,17 +22,27 @@ html{color-scheme:dark}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
   background:
-    radial-gradient(1000px 500px at 80% -10%, rgba(211,168,92,.06), transparent 60%),
-    radial-gradient(800px 400px at -10% 110%, rgba(123,167,217,.05), transparent 60%),
+    radial-gradient(1000px 520px at 82% -12%, rgba(230,36,41,.08), transparent 60%),
+    radial-gradient(900px 480px at -12% 112%, rgba(43,55,132,.20), transparent 60%),
     var(--bg);
   color:var(--text); min-height:100vh; line-height:1.5;
+}
+/* 蛛网纹理：仅在背景角落低调点缀，克制不卡通 */
+body::before{
+  content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360' viewBox='0%200%20360%20360'%3E%3Cg fill='none' stroke='%23e62429' stroke-opacity='0.06'%3E%3Ccircle cx='0' cy='0' r='60'/%3E%3Ccircle cx='0' cy='0' r='115'/%3E%3Ccircle cx='0' cy='0' r='170'/%3E%3Ccircle cx='0' cy='0' r='225'/%3E%3Ccircle cx='0' cy='0' r='280'/%3E%3Cpath d='M0,0L300,0M0,0L212,212M0,0L0,300M0,0L-212,212'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360' viewBox='0%200%20360%20360'%3E%3Cg fill='none' stroke='%234b5cc4' stroke-opacity='0.07'%3E%3Ccircle cx='360' cy='360' r='60'/%3E%3Ccircle cx='360' cy='360' r='115'/%3E%3Ccircle cx='360' cy='360' r='170'/%3E%3Ccircle cx='360' cy='360' r='225'/%3E%3Ccircle cx='360' cy='360' r='280'/%3E%3Cpath d='M360,360L60,360M360,360L148,148M360,360L360,60'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:-80px -80px, calc(100% + 80px) calc(100% + 80px);
+  background-size:340px 340px, 340px 340px;
 }
 button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input,select,textarea{
   font:inherit;background:var(--card-hi);border:1px solid var(--line);
   color:var(--text);border-radius:9px;padding:9px 11px;width:100%;outline:none;
 }
-input:focus,select:focus,textarea:focus{border-color:var(--gold-soft)}
+input:focus,select:focus,textarea:focus{border-color:var(--blue-bright)}
 textarea{resize:vertical;min-height:62px}
 h1,h2,h3{font-weight:600}
 .hidden{display:none!important}
@@ -46,14 +57,14 @@ h1,h2,h3{font-weight:600}
   padding:9px 15px;border-radius:10px;background:var(--card-hi);
   border:1px solid var(--line);font-size:13.5px;transition:.15s;white-space:nowrap;
 }
-.btn:hover{border-color:var(--gold-soft)}
+.btn:hover{border-color:var(--blue-bright)}
 .btn.primary{
-  background:linear-gradient(135deg,#cf9f4d,#b9873a);color:#191207;font-weight:600;border:none;
+  background:linear-gradient(135deg,#e62429,#b3181f);color:#fff;font-weight:600;border:none;
 }
 .btn.primary:hover{filter:brightness(1.08)}
 .btn.ghost{background:transparent}
-.btn.danger{color:var(--red);border-color:rgba(217,120,120,.35)}
-.btn.danger:hover{border-color:var(--red)}
+.btn.danger{color:var(--danger);border-color:rgba(224,90,95,.35)}
+.btn.danger:hover{border-color:var(--danger)}
 .btn.mini{padding:4px 10px;font-size:12px;border-radius:8px}
 .btn.small{padding:6px 11px;font-size:12.5px}
 .btn.wide{width:100%;margin-top:10px}
@@ -65,11 +76,15 @@ h1,h2,h3{font-weight:600}
   padding:13px 20px;background:rgba(11,14,19,.88);backdrop-filter:blur(10px);
   border-bottom:1px solid var(--line);
 }
+.topbar::after{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,var(--red),var(--blue-bright));opacity:.45;
+}
 .brand{display:flex;align-items:center;gap:11px}
 .logo{
   width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#c99b4d,#8a6d3b);color:#171005;font-weight:800;font-size:15px;letter-spacing:.02em;
-  box-shadow:0 2px 12px rgba(211,168,92,.25);
+  background:linear-gradient(135deg,#e62429,#a3141a);color:#fff;font-weight:800;font-size:15px;letter-spacing:.02em;
+  box-shadow:0 2px 12px rgba(230,36,41,.35);
 }
 .brand .title{font-size:15px;font-weight:600}
 .brand .subtitle{font-size:11px;color:var(--muted)}
@@ -80,7 +95,7 @@ h1,h2,h3{font-weight:600}
 }
 .tabs::-webkit-scrollbar{display:none}
 .tab{padding:8px 15px;border-radius:9px;color:var(--muted);font-size:13.5px;white-space:nowrap}
-.tab.active{background:rgba(211,168,92,.12);color:var(--gold)}
+.tab.active{background:var(--red-soft);color:var(--red)}
 
 /* ================= 布局与卡片 ================= */
 main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
@@ -102,8 +117,8 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
   display:inline-block;font-size:11px;padding:2px 9px;border-radius:99px;vertical-align:middle;
   background:rgba(122,128,140,.12);color:var(--muted);border:1px solid var(--line);
 }
-.tag.done{background:rgba(121,185,138,.12);color:var(--green);border-color:rgba(121,185,138,.35)}
-.tag.pending{background:rgba(211,168,92,.1);color:var(--gold);border-color:rgba(211,168,92,.3)}
+.tag.done{background:rgba(88,194,126,.12);color:var(--green);border-color:rgba(88,194,126,.35)}
+.tag.pending{background:var(--red-soft);color:var(--red);border-color:rgba(230,36,41,.35)}
 .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 
 /* ================= 首页 ================= */
@@ -111,22 +126,22 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
 .date-line{font-size:12.5px;color:var(--dim);letter-spacing:.04em}
 .hero-title{font-size:25px;margin:6px 0 4px;letter-spacing:.01em}
 .hero-sub{font-size:13px;color:var(--muted)}
-.hero-sub b{color:var(--gold);font-size:15px}
+.hero-sub b{color:var(--red);font-size:15px}
 .notice{
-  background:rgba(211,168,92,.08);border:1px solid rgba(211,168,92,.32);color:var(--gold);
+  background:var(--red-soft);border:1px solid rgba(230,36,41,.35);color:var(--red);
   border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;line-height:1.6;
 }
-.notice.good{background:rgba(121,185,138,.08);border-color:rgba(121,185,138,.32);color:var(--green)}
+.notice.good{background:rgba(88,194,126,.08);border-color:rgba(88,194,126,.32);color:var(--green)}
 .modes{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
 .mode-btn{
   background:var(--card-hi);border:1px solid var(--line);border-radius:11px;padding:11px;
   display:flex;flex-direction:column;gap:2px;text-align:left;transition:.15s;
 }
-.mode-btn:hover{border-color:var(--gold-soft)}
+.mode-btn:hover{border-color:var(--blue-bright)}
 .mode-btn b{font-size:14px}
 .mode-btn span{font-size:11px;color:var(--muted);line-height:1.4}
-.mode-btn.active{border-color:var(--gold);background:rgba(211,168,92,.08)}
-.mode-btn.active b{color:var(--gold)}
+.mode-btn.active{border-color:var(--red);background:var(--red-soft)}
+.mode-btn.active b{color:var(--red)}
 .topic-line{font-size:15px;margin:4px 0 8px}
 .status{font-size:13px;color:var(--muted)}
 .status.done{color:var(--green)}
@@ -136,26 +151,26 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
 .badge{
   width:96px;height:96px;border-radius:50%;flex-shrink:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  background:radial-gradient(circle at 35% 28%,#3d3a2d,#181c14);
-  border:2px solid var(--gold);box-shadow:0 0 26px rgba(211,168,92,.16), inset 0 0 18px rgba(211,168,92,.05);
+  background:radial-gradient(circle at 35% 28%,#20284a,#101423);
+  border:2px solid var(--red);box-shadow:0 0 26px rgba(230,36,41,.22), inset 0 0 18px rgba(75,92,196,.14);
 }
-.badge .big{font-size:32px;font-weight:800;color:var(--gold);line-height:1}
+.badge .big{font-size:32px;font-weight:800;color:var(--red);line-height:1}
 .badge .sub{font-size:12px;color:var(--muted);margin-top:3px}
 .badge.big-badge{width:118px;height:118px}
 .badge.big-badge .big{font-size:40px}
 .bar{height:8px;background:#232b3a;border-radius:99px;overflow:hidden;margin:8px 0}
-.bar>i{display:block;height:100%;background:linear-gradient(90deg,#a97f3d,#e0b567);border-radius:99px;transition:width .45s ease}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#b3181f,#e62429);border-radius:99px;transition:width .45s ease}
 .week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0 8px}
 .wcell{
   aspect-ratio:1;border-radius:10px;background:var(--card-hi);border:1px solid var(--line);
   display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--dim);
 }
 .wcell b{font-size:13px;color:var(--text);font-weight:600}
-.wcell.done{border-color:rgba(121,185,138,.45);background:rgba(121,185,138,.08)}
+.wcell.done{border-color:rgba(88,194,126,.45);background:rgba(88,194,126,.08)}
 .wcell.done b{color:var(--green)}
-.wcell.miss{border-color:rgba(217,120,120,.35);background:rgba(217,120,120,.06)}
+.wcell.miss{border-color:rgba(230,36,41,.35);background:rgba(230,36,41,.06)}
 .wcell.miss b{color:var(--red)}
-.wcell.today{outline:1px solid var(--gold)}
+.wcell.today{outline:1px solid var(--red)}
 .risk{color:var(--red);font-size:12.5px;line-height:1.6}
 .risk.ok{color:var(--green)}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
@@ -163,13 +178,13 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
   padding:4px 11px;border-radius:99px;background:var(--card-hi);border:1px solid var(--line);
   font-size:12px;color:var(--muted);
 }
-.chip.done{color:var(--green);border-color:rgba(121,185,138,.35)}
+.chip.done{color:var(--green);border-color:rgba(88,194,126,.35)}
 .p1-grid{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
 .p1-chip{
   background:var(--card-hi);border:1px dashed var(--line);border-radius:11px;padding:11px;
   text-align:left;color:var(--muted);transition:.15s;font-size:12px;line-height:1.5;
 }
-.p1-chip:hover{border-color:var(--gold-soft);color:var(--text)}
+.p1-chip:hover{border-color:var(--blue-bright);color:var(--text)}
 .p1-chip b{display:block;color:var(--text);font-size:13.5px;margin-bottom:3px}
 
 /* ================= 主线对话 ================= */
@@ -182,7 +197,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
   max-width:86%;padding:11px 14px;border-radius:14px;line-height:1.6;
   word-break:break-word;font-size:14.5px;white-space:pre-wrap;
 }
-.msg.user{align-self:flex-end;background:linear-gradient(135deg,#2b3142,#232a3b);border:1px solid #384158;border-bottom-right-radius:4px}
+.msg.user{align-self:flex-end;background:linear-gradient(135deg,#1d2545,#161c33);border:1px solid #2b3784;border-bottom-right-radius:4px}
 .msg.ai{align-self:flex-start;background:var(--card-hi);border:1px solid var(--line);border-bottom-left-radius:4px}
 .typing{opacity:.55;animation:pulse 1.2s infinite}
 @keyframes pulse{50%{opacity:.3}}
@@ -190,6 +205,16 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
 .composer-row{display:flex;gap:8px;align-items:stretch}
 .composer-row textarea{flex:1}
 .composer-row .btn{min-width:64px}
+.voice-row{display:flex;gap:8px;align-items:stretch}
+.btn.talk{
+  flex:1;height:56px;border-radius:16px;font-size:16px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,#e62429,#b3181f);border:none;
+  box-shadow:0 4px 18px rgba(230,36,41,.28);
+  touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+}
+.btn.talk:hover{filter:brightness(1.08)}
+.btn.talk.recording{background:var(--red-deep);animation:pulseTalk 1s infinite}
+@keyframes pulseTalk{50%{box-shadow:0 4px 28px rgba(230,36,41,.6);transform:scale(1.015)}}
 .end-row{justify-content:flex-end;align-items:center;margin-top:10px;gap:10px;flex-wrap:wrap}
 
 /* ================= 支线 ================= */
@@ -204,11 +229,11 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
   background:var(--card-hi);border:1px solid var(--line);border-radius:12px;padding:14px;
   font-size:13.5px;line-height:1.7;
 }
-.word-back .phon{color:var(--gold);font-size:13px}
+.word-back .phon{color:var(--blue-bright);font-size:13px}
 .word-back .ex{color:var(--text);margin-top:8px}
 .word-back .exZh{color:var(--muted);font-size:12px;margin-top:2px}
 .word-controls{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
-.passage-title{font-size:14px;font-weight:600;color:var(--gold);margin:8px 0 6px}
+.passage-title{font-size:14px;font-weight:600;color:var(--blue-bright);margin:8px 0 6px}
 .passage{
   font-size:13.5px;line-height:1.75;color:var(--muted);max-height:230px;overflow-y:auto;
   background:var(--card-hi);border:1px solid var(--line);border-radius:11px;padding:12px;
@@ -225,11 +250,11 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
 .lv-hero{display:flex;gap:20px;align-items:center;margin-top:4px;flex-wrap:wrap}
 .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;text-align:center}
-.stat b{font-size:24px;color:var(--gold);display:block}
+.stat b{font-size:24px;color:var(--red);display:block}
 .stat span{font-size:12px;color:var(--muted)}
 .sum-card{padding:12px 0;border-bottom:1px dashed var(--line-soft)}
 .sum-card:last-child{border-bottom:none}
-.sum-date{font-size:12px;color:var(--gold);margin-bottom:4px}
+.sum-date{font-size:12px;color:var(--red);margin-bottom:4px}
 .field{margin-bottom:12px}
 .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
 .check{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--muted);margin:8px 0;line-height:1.5}
@@ -262,7 +287,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
   opacity:0;pointer-events:none;transition:.25s;max-width:88vw;text-align:center;
 }
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-#toast.err{color:var(--red);border-color:rgba(217,120,120,.4)}
+#toast.err{color:var(--red);border-color:rgba(230,36,41,.4)}
 
 /* ================= 移动端 ================= */
 @media(max-width:680px){
@@ -385,7 +410,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
     </div>
 
     <div id="summaryCard" class="card hidden" style="margin-top:14px">
-      <h3>📋 本次对话总结</h3>
+      <h3>📋 今日复盘</h3>
       <div id="summaryBody" class="pre"></div>
       <button id="btnCheckin" class="btn primary wide">完成主线 · 今日打卡</button>
     </div>
@@ -393,15 +418,19 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
     <div class="chat card" id="chatBox"></div>
 
     <div class="composer card">
-      <div class="composer-row">
-        <button id="btnMic" class="btn">🎤 语音</button>
-        <textarea id="inputText" placeholder="用英文说点什么…（语音失败时请打字）"></textarea>
+      <div class="composer-row voice-row" id="voiceMode">
+        <button id="btnTalk" class="btn talk">🎤 按住说话</button>
+        <button id="btnType" class="btn ghost small">✏️ 打字</button>
+      </div>
+      <div class="composer-row hidden" id="typeMode">
+        <textarea id="inputText" placeholder="用英文输入…（回车发送）"></textarea>
+        <button id="btnBackVoice" class="btn ghost small">🎤</button>
         <button id="btnSend" class="btn primary">发送</button>
       </div>
       <div id="micHint" class="hint small"></div>
       <div class="composer-row end-row">
         <span id="endHint" class="hint small"></span>
-        <button id="btnEndChat" class="btn" disabled>结束对话，让老师总结</button>
+        <button id="btnEndChat" class="btn" disabled>结束本次对话</button>
       </div>
     </div>
   </section>
@@ -492,7 +521,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
       <div id="histWeekGrid" class="week"></div>
     </div>
     <div class="card" style="margin-top:14px">
-      <h3>近期对话总结</h3>
+      <h3>近期复盘</h3>
       <div id="histSummaries"></div>
     </div>
     <div class="card" style="margin-top:14px">
@@ -529,14 +558,22 @@ main{max-width:1000px;margin:0 auto;padding:18px 20px 90px}
         <div class="field"><label>API Key（首次使用请粘贴你的免费 key，仅保存本机）</label><input id="setVoiceKey" type="password" placeholder="sk-..."></div>
         <div class="field"><label>模型</label><input id="setVoiceModel" placeholder="qwen3-tts-vd-2026-01-26"></div>
         <div class="field"><label>发音人 voice（按服务商要求填）</label><input id="setVoiceName" placeholder="Cherry / default"></div>
-        <div class="check"><input type="checkbox" id="chkQwenASR"><label for="chkQwenASR">优先用 Qwen 语音识别（失败或不支持则改用打字）</label></div>
+        <div class="field">
+          <label>语音识别引擎</label>
+          <select id="setAsrMode">
+            <option value="auto">自动：Qwen 优先，失败自动切浏览器</option>
+            <option value="browser">浏览器语音识别（最稳定）</option>
+            <option value="qwen">仅 Qwen 接口</option>
+          </select>
+        </div>
         <div class="check"><input type="checkbox" id="chkQwenTTS"><label for="chkQwenTTS">优先用 Qwen 朗读（失败自动回退浏览器发音）</label></div>
+        <div class="check"><input type="checkbox" id="chkAutoTTS"><label for="chkAutoTTS">AI 回复后自动朗读（浏览器语音）</label></div>
         <div class="row">
           <button id="btnTestVoice" class="btn">测试朗读</button>
           <button id="btnResetVoice" class="btn ghost small">恢复默认</button>
         </div>
         <div id="voiceTestResult" class="test-result"></div>
-        <div class="note">语音识别走 /audio/transcriptions、朗读走 /audio/speech（OpenAI 兼容接口）。若没声音或转写失败，通常是接口跨域 / key 无效 / 服务商格式不同，App 会自动回退浏览器自带语音，不影响使用。</div>
+        <div class="note">语音识别：Qwen 接口失败会自动回退浏览器语音识别（Chrome/Edge 最稳，需允许麦克风）；朗读：Qwen 失败自动回退浏览器发音。</div>
       </div>
 
       <div class="card">
@@ -642,7 +679,57 @@ const TOPICS = [
   { en:'Using a maps app', zh:'用地图导航出行', scene:'你用手机导航去一个地方，路上需要确认路线。', starter:'It says turn left in 200 meters. Is that right?' },
   { en:'At the gym', zh:'健身房', scene:'你在健身房问器材怎么用或约课。', starter:'Excuse me, how do I use this machine?' },
   { en:'Talking about travel plans', zh:'聊旅行计划', scene:'和朋友聊未来的旅行安排。', starter:'I am planning a trip to the US next year.' },
-  { en:'Chatting about family', zh:'聊家人', scene:'和新朋友聊自己的家庭。', starter:'Do you have any brothers or sisters?' }
+  { en:'Chatting about family', zh:'聊家人', scene:'和新朋友聊自己的家庭。', starter:'Do you have any brothers or sisters?' },
+  { en:'Taking a taxi', zh:'打出租车', scene:'你在路边打车去酒店。', starter:'Excuse me, could you take me to the Grand Hotel?' },
+  { en:'At the gas station', zh:'加油站', scene:'自驾途中需要加油。', starter:'Which pump should I use for regular gas?' },
+  { en:'Parking the car', zh:'停车', scene:'你在市区找停车场停车。', starter:'Excuse me, is there a parking lot nearby?' },
+  { en:'Renting a car', zh:'租车自驾', scene:'你打算租一辆车自驾游。', starter:'Hi, I would like to rent a car for three days.' },
+  { en:'Layover and transfer', zh:'转机换乘', scene:'你要转机，时间紧张，需要问路。', starter:'Excuse me, where do I go for a connecting flight?' },
+  { en:'Flight delay', zh:'航班延误', scene:'航班延误，你需要改签或询问补偿。', starter:'My flight is delayed. What are my options?' },
+  { en:'Visiting a friend home', zh:'去朋友家做客', scene:'第一次去美国朋友家做客。', starter:'Thank you so much for having me over!' },
+  { en:'A birthday party', zh:'生日聚会', scene:'你参加朋友的生日聚会。', starter:'Happy birthday! This is for you.' },
+  { en:'Holiday celebration', zh:'节日庆祝', scene:'聊感恩节或圣诞节怎么过。', starter:'What do you usually do on Thanksgiving?' },
+  { en:'Work small talk', zh:'办公室闲聊', scene:'和同事在茶水间闲聊。', starter:'How is your project going?' },
+  { en:'Asking for leave', zh:'请假', scene:'你需要向上司请假一天。', starter:'Could I take a day off this Friday?' },
+  { en:'Job interview', zh:'求职面试', scene:'你在参加一场英语面试。', starter:'Thank you for the opportunity to interview today.' },
+  { en:'Updating your manager', zh:'汇报工作', scene:'向经理汇报项目进展。', starter:'Here is an update on the project.' },
+  { en:'Technology talk', zh:'聊科技产品', scene:'和朋友聊最近的新科技产品。', starter:'Have you tried the new phone?' },
+  { en:'Phone problems', zh:'手机出问题', scene:'手机坏了，去店里求助。', starter:'My phone screen is broken. Can you fix it?' },
+  { en:'Internet and wifi', zh:'网络与 Wi-Fi', scene:'在咖啡馆或民宿连 Wi-Fi。', starter:'What is the wifi password here?' },
+  { en:'News discussion', zh:'聊新闻热点', scene:'和朋友聊最近的热点新闻。', starter:'Did you see the news today?' },
+  { en:'Environment talk', zh:'环保话题', scene:'聊环保习惯和气候变化。', starter:'What do you do to protect the environment?' },
+  { en:'Healthy habits', zh:'健康习惯', scene:'聊运动和饮食健康。', starter:'How do you stay healthy?' },
+  { en:'Sleep problems', zh:'睡眠问题', scene:'你最近睡眠不好，和朋友聊聊。', starter:'I have been having trouble sleeping lately.' },
+  { en:'Allergies', zh:'过敏问题', scene:'你过敏了，需要买药或看医生。', starter:'I think I am allergic to something.' },
+  { en:'Dental visit', zh:'看牙', scene:'你牙疼，预约看牙医。', starter:'I have a toothache. Can I see the dentist?' },
+  { en:'At the barbershop', zh:'理发店', scene:'你去理发店剪头发。', starter:'I would like a haircut, please.' },
+  { en:'At the laundry', zh:'洗衣店', scene:'你去洗衣店洗衣服。', starter:'Can I have this shirt cleaned?' },
+  { en:'Renting an apartment', zh:'租房', scene:'你在美国看房租房。', starter:'Is this apartment still available?' },
+  { en:'Moving house', zh:'搬家', scene:'你要搬家，和搬家公司或朋友沟通。', starter:'Could you help me carry this box?' },
+  { en:'At the library', zh:'图书馆', scene:'你去图书馆办卡借书。', starter:'How do I get a library card?' },
+  { en:'At the museum', zh:'博物馆', scene:'你去博物馆参观买票。', starter:'How much is a student ticket?' },
+  { en:'Buying movie tickets', zh:'电影院买票', scene:'你去电影院买票选座。', starter:'Two tickets for the 7 o clock show, please.' },
+  { en:'Concert or live show', zh:'演唱会演出', scene:'你和朋友去看演出。', starter:'What time does the show start?' },
+  { en:'Talking about music', zh:'聊音乐', scene:'和朋友聊喜欢的音乐。', starter:'What kind of music do you like?' },
+  { en:'Talking about books', zh:'聊读书', scene:'聊最近在读的书。', starter:'What are you reading these days?' },
+  { en:'Running and fitness', zh:'跑步健身', scene:'聊跑步和健身计划。', starter:'Do you want to go running together?' },
+  { en:'Money and budget', zh:'钱与预算', scene:'聊消费习惯和预算。', starter:'How do you usually budget your money?' },
+  { en:'Compliments and thanks', zh:'道谢与赞美', scene:'练习地道地道谢和夸人。', starter:'Thank you so much, you are really kind.' },
+  { en:'Cultural differences', zh:'文化差异', scene:'聊中美文化差异。', starter:'What surprised you most about the US?' },
+  { en:'Learning English', zh:'学英语', scene:'聊学英语的方法和困惑。', starter:'How did you learn English so well?' },
+  { en:'Future plans', zh:'未来计划', scene:'聊一年后的目标和计划。', starter:'What are your plans for next year?' },
+  { en:'Talking about pets', zh:'聊宠物', scene:'聊各自的宠物。', starter:'Do you have any pets?' },
+  { en:'Shopping for clothes', zh:'买衣服', scene:'你在商场买衣服试穿。', starter:'Could I try this on in a different size?' },
+  { en:'Tax refund', zh:'购物退税', scene:'游客在商场办理退税。', starter:'Excuse me, how does the tax refund work?' },
+  { en:'Asking for a recommendation', zh:'请人推荐', scene:'请朋友推荐餐厅或去处。', starter:'Can you recommend a good place to eat?' },
+  { en:'Meeting new colleagues', zh:'认识新同事', scene:'入职第一天认识新同事。', starter:'Hi, I am new here. Nice to meet you!' },
+  { en:'Weekend getaway', zh:'周末短途游', scene:'计划周末去周边小镇。', starter:'Do you want to take a weekend trip?' },
+  { en:'Hiking', zh:'徒步爬山', scene:'和朋友约去徒步。', starter:'How long is the trail?' },
+  { en:'Grocery delivery', zh:'生鲜配送', scene:'用 App 订菜或取外卖。', starter:'Can you deliver to this address?' },
+  { en:'Room service', zh:'酒店客房服务', scene:'在酒店叫客房服务。', starter:'Can I order room service, please?' },
+  { en:'Swimming and sports', zh:'游泳运动', scene:'聊运动和比赛。', starter:'Do you play any sports?' },
+  { en:'Photography', zh:'摄影', scene:'旅行中帮人拍照或聊相机。', starter:'Could you take a photo of us?' },
+  { en:'Complaining politely', zh:'礼貌投诉', scene:'对服务不满意，礼貌反映。', starter:'I am sorry to say this, but the room is too noisy.' }
 ];
 
 /* 生词卡库 */
@@ -694,7 +781,131 @@ const WORDS = [
   { w:'vacancy', p:'/ˈveɪkənsi/', zh:'空房', ex:'Do you have any vacancies tonight?', exZh:'今晚还有空房吗？' },
   { w:'checkout', p:'/ˈtʃekaʊt/', zh:'退房', ex:'Checkout is at noon.', exZh:'中午退房。' },
   { w:'lobby', p:'/ˈlɒbi/', zh:'大堂', ex:'I will meet you in the lobby.', exZh:'我在大堂等你。' },
-  { w:'reservation', p:'/ˌrezərˈveɪʃn/', zh:'预订', ex:'I have a reservation under the name Chen.', exZh:'我用陈的名字预订了。' }
+  { w:'reservation', p:'/ˌrezərˈveɪʃn/', zh:'预订', ex:'I have a reservation under the name Chen.', exZh:'我用陈的名字预订了。' },
+  /* —— 机场 / 旅行 —— */
+  { w:'departure', p:'/dɪˈpɑːrtʃər/', zh:'出发（航班）', ex:'What time is the departure?', exZh:'航班几点出发？' },
+  { w:'arrival', p:'/əˈraɪvəl/', zh:'到达', ex:'The arrival time is delayed.', exZh:'到达时间延误了。' },
+  { w:'layover', p:'/ˈleɪoʊvər/', zh:'中转停留', ex:'We have a two-hour layover in Tokyo.', exZh:'我们在东京中转停留两小时。' },
+  { w:'passport', p:'/ˈpæspɔːrt/', zh:'护照', ex:'May I see your passport, please?', exZh:'请出示护照。' },
+  { w:'visa', p:'/ˈviːzə/', zh:'签证', ex:'Do I need a visa for the US?', exZh:'去美国需要签证吗？' },
+  { w:'luggage', p:'/ˈlʌɡɪdʒ/', zh:'行李', ex:'How many bags of luggage do you have?', exZh:'你有几件行李？' },
+  { w:'seatbelt', p:'/ˈsiːtbelt/', zh:'安全带', ex:'Please fasten your seatbelt.', exZh:'请系好安全带。' },
+  { w:'take off', p:'/teɪk ɔːf/', zh:'起飞', ex:'The plane will take off soon.', exZh:'飞机很快起飞。' },
+  { w:'land', p:'/lænd/', zh:'降落', ex:'We will land in about two hours.', exZh:'我们大约两小时后降落。' },
+  { w:'transfer', p:'/trænsˈfɜːr/', zh:'转机', ex:'I need to transfer to another flight.', exZh:'我需要转机。' },
+  { w:'terminal', p:'/ˈtɜːrmɪnl/', zh:'航站楼', ex:'Which terminal is the flight leaving from?', exZh:'航班从哪个航站楼出发？' },
+  { w:'rental car', p:'/ˈrentl kɑːr/', zh:'租的车', ex:'Where do I pick up the rental car?', exZh:'我在哪里取租的车？' },
+  /* —— 餐厅 —— */
+  { w:'menu', p:'/ˈmenjuː/', zh:'菜单', ex:'Could we see the menu, please?', exZh:'请给我们菜单。' },
+  { w:'order', p:'/ˈɔːrdər/', zh:'点餐', ex:'Are you ready to order?', exZh:'可以点餐了吗？' },
+  { w:'waiter', p:'/ˈweɪtər/', zh:'服务员', ex:'Excuse me, waiter, could we get some water?', exZh:'服务员，能给我们加点水吗？' },
+  { w:'bill', p:'/bɪl/', zh:'账单', ex:'Can we get the bill, please?', exZh:'请给我们账单。' },
+  { w:'well done', p:'/wel dʌn/', zh:'全熟', ex:'I would like my steak well done.', exZh:'我的牛排要全熟。' },
+  { w:'spicy', p:'/ˈspaɪsi/', zh:'辣的', ex:'Is this dish spicy?', exZh:'这道菜辣吗？' },
+  { w:'vegetarian', p:'/ˌvedʒəˈteriən/', zh:'素食者', ex:'I am vegetarian.', exZh:'我是素食者。' },
+  { w:'dessert', p:'/dɪˈzɜːrt/', zh:'甜点', ex:'What desserts do you have?', exZh:'你们有什么甜点？' },
+  { w:'beverage', p:'/ˈbevərɪdʒ/', zh:'饮品', ex:'Would you like a beverage?', exZh:'要一杯饮品吗？' },
+  { w:'recommend', p:'/ˌrekəˈmend/', zh:'推荐', ex:'What do you recommend?', exZh:'你推荐什么？' },
+  { w:'portion', p:'/ˈpɔːrʃn/', zh:'分量', ex:'The portions are pretty big here.', exZh:'这里的分量挺大的。' },
+  /* —— 购物 —— */
+  { w:'cashier', p:'/kæˈʃɪr/', zh:'收银员', ex:'The cashier scanned my items.', exZh:'收银员扫了我的商品。' },
+  { w:'discount', p:'/ˈdɪskaʊnt/', zh:'折扣', ex:'Is there any discount?', exZh:'有折扣吗？' },
+  { w:'size', p:'/saɪz/', zh:'尺码', ex:'What size do you wear?', exZh:'你穿什么码？' },
+  { w:'color', p:'/ˈkʌlər/', zh:'颜色', ex:'Do you have this in another color?', exZh:'这个有其他颜色吗？' },
+  { w:'wallet', p:'/ˈwɑːlɪt/', zh:'钱包', ex:'I left my wallet at home.', exZh:'我把钱包落在家里了。' },
+  { w:'change', p:'/tʃeɪndʒ/', zh:'找零', ex:'Keep the change.', exZh:'不用找零。' },
+  { w:'exchange', p:'/ɪksˈtʃeɪndʒ/', zh:'换货 / 兑换', ex:'Can I exchange this for a bigger size?', exZh:'我能换个大一号的吗？' },
+  { w:'customer', p:'/ˈkʌstəmər/', zh:'顾客', ex:'The customer is always right.', exZh:'顾客永远是对的。' },
+  /* —— 交通 —— */
+  { w:'traffic', p:'/ˈtræfɪk/', zh:'交通', ex:'The traffic is terrible this morning.', exZh:'今天早上交通很糟。' },
+  { w:'exit', p:'/ˈeksɪt/', zh:'出口', ex:'Where is the exit?', exZh:'出口在哪里？' },
+  { w:'entrance', p:'/ˈentrəns/', zh:'入口', ex:'The entrance is on the left.', exZh:'入口在左边。' },
+  { w:'bridge', p:'/brɪdʒ/', zh:'桥', ex:'Cross the bridge and turn right.', exZh:'过桥后右转。' },
+  { w:'tunnel', p:'/ˈtʌnl/', zh:'隧道', ex:'The tunnel is closed tonight.', exZh:'隧道今晚关闭。' },
+  { w:'crosswalk', p:'/ˈkrɔːswɔːk/', zh:'人行横道', ex:'Use the crosswalk to cross the street.', exZh:'请走人行横道过马路。' },
+  { w:'parking lot', p:'/ˈpɑːrkɪŋ lɒt/', zh:'停车场', ex:'The parking lot is full.', exZh:'停车场满了。' },
+  { w:'subway', p:'/ˈsʌbweɪ/', zh:'地铁', ex:'The subway is faster than driving.', exZh:'地铁比开车快。' },
+  { w:'bus stop', p:'/bʌs stɒp/', zh:'公交站', ex:'The bus stop is across the street.', exZh:'公交站在街对面。' },
+  { w:'fare', p:'/fer/', zh:'车费', ex:'How much is the fare?', exZh:'车费多少钱？' },
+  { w:'schedule', p:'/ˈskedʒuːl/', zh:'时刻表 / 日程', ex:'Do you have a bus schedule?', exZh:'有公交时刻表吗？' },
+  { w:'nearby', p:'/ˌnɪrˈbaɪ/', zh:'附近', ex:'Is there a pharmacy nearby?', exZh:'附近有药店吗？' },
+  /* —— 酒店 —— */
+  { w:'double room', p:'/ˈdʌbl ruːm/', zh:'双人间', ex:'I would like a double room.', exZh:'我想要一间双人间。' },
+  { w:'single room', p:'/ˈsɪŋɡl ruːm/', zh:'单人间', ex:'A single room for two nights, please.', exZh:'一间单人房，住两晚。' },
+  { w:'key card', p:'/kiː kɑːrd/', zh:'房卡', ex:'Here is your key card.', exZh:'这是你的房卡。' },
+  { w:'elevator', p:'/ˈelɪveɪtər/', zh:'电梯', ex:'The elevator is at the end of the hall.', exZh:'电梯在大厅尽头。' },
+  { w:'breakfast', p:'/ˈbrekfəst/', zh:'早餐', ex:'Is breakfast included?', exZh:'含早餐吗？' },
+  { w:'air conditioning', p:'/er kənˈdɪʃənɪŋ/', zh:'空调', ex:'The air conditioning is too cold.', exZh:'空调太冷了。' },
+  { w:'quiet', p:'/ˈkwaɪət/', zh:'安静的', ex:'Could I have a quiet room?', exZh:'能给我一间安静的房间吗？' },
+  { w:'view', p:'/vjuː/', zh:'景色', ex:'Do you have a room with a view?', exZh:'有带景观的房间吗？' },
+  /* —— 健康 —— */
+  { w:'symptom', p:'/ˈsɪmptəm/', zh:'症状', ex:'What are your symptoms?', exZh:'你有什么症状？' },
+  { w:'pain', p:'/peɪn/', zh:'疼痛', ex:'I have a pain in my back.', exZh:'我背疼。' },
+  { w:'dizzy', p:'/ˈdɪzi/', zh:'头晕', ex:'I feel dizzy.', exZh:'我头晕。' },
+  { w:'cough', p:'/kɔːf/', zh:'咳嗽', ex:'I have a bad cough.', exZh:'我咳嗽得厉害。' },
+  { w:'medicine', p:'/ˈmedɪsn/', zh:'药', ex:'Take this medicine after meals.', exZh:'饭后吃这个药。' },
+  { w:'pill', p:'/pɪl/', zh:'药片', ex:'Take one pill every four hours.', exZh:'每四小时吃一片。' },
+  { w:'rest', p:'/rest/', zh:'休息', ex:'You need to get some rest.', exZh:'你需要休息一下。' },
+  { w:'checkup', p:'/ˈtʃekʌp/', zh:'体检', ex:'I would like a checkup.', exZh:'我想做个体检。' },
+  /* —— 工作 —— */
+  { w:'deadline', p:'/ˈdedlaɪn/', zh:'截止日期', ex:'The deadline is this Friday.', exZh:'截止日期是这周五。' },
+  { w:'meeting', p:'/ˈmiːtɪŋ/', zh:'会议', ex:'The meeting starts at ten.', exZh:'会议十点开始。' },
+  { w:'colleague', p:'/ˈkɑːliːɡ/', zh:'同事', ex:'My colleague helped me a lot.', exZh:'我同事帮了我很多。' },
+  { w:'project', p:'/ˈprɒdʒekt/', zh:'项目', ex:'The project is going well.', exZh:'项目进展顺利。' },
+  { w:'report', p:'/rɪˈpɔːrt/', zh:'报告', ex:'I will send the report today.', exZh:'我今天把报告发出去。' },
+  { w:'vacation', p:'/veɪˈkeɪʃn/', zh:'假期', ex:'I am taking a vacation next week.', exZh:'我下周休假。' },
+  { w:'office', p:'/ˈɔːfɪs/', zh:'办公室', ex:'She is not in the office today.', exZh:'她今天不在办公室。' },
+  { w:'email', p:'/ˈiːmeɪl/', zh:'邮件', ex:'I will email you the details.', exZh:'我会把细节邮件发给你。' },
+  { w:'overtime', p:'/ˈoʊvərtaɪm/', zh:'加班', ex:'I worked overtime last night.', exZh:'我昨晚加班了。' },
+  /* —— 科技 —— */
+  { w:'battery', p:'/ˈbætəri/', zh:'电池', ex:'My phone battery is dead.', exZh:'我手机没电了。' },
+  { w:'charger', p:'/ˈtʃɑːrdʒər/', zh:'充电器', ex:'Do you have a charger I can borrow?', exZh:'能借我充电器吗？' },
+  { w:'wifi', p:'/ˈwaɪfaɪ/', zh:'无线网', ex:'What is the wifi password?', exZh:'Wi-Fi 密码是什么？' },
+  { w:'app', p:'/æp/', zh:'应用', ex:'This app is really useful.', exZh:'这个应用很实用。' },
+  { w:'update', p:'/ˌʌpˈdeɪt/', zh:'更新', ex:'I need to update the app.', exZh:'我需要更新这个应用。' },
+  { w:'password', p:'/ˈpæswɜːrd/', zh:'密码', ex:'I forgot my password.', exZh:'我忘了密码。' },
+  { w:'screen', p:'/skriːn/', zh:'屏幕', ex:'The screen is cracked.', exZh:'屏幕裂了。' },
+  { w:'download', p:'/ˌdaʊnˈloʊd/', zh:'下载', ex:'I downloaded the map for offline use.', exZh:'我下载了离线地图。' },
+  { w:'camera', p:'/ˈkæmərə/', zh:'相机', ex:'The camera on this phone is great.', exZh:'这手机拍照很棒。' },
+  { w:'message', p:'/ˈmesɪdʒ/', zh:'消息', ex:'I got your message.', exZh:'我收到你的消息了。' },
+  /* —— 天气 —— */
+  { w:'forecast', p:'/ˈfɔːrkæst/', zh:'天气预报', ex:'What is the forecast for tomorrow?', exZh:'明天天气怎么样？' },
+  { w:'sunny', p:'/ˈsʌni/', zh:'晴朗的', ex:'It is sunny and warm today.', exZh:'今天晴朗暖和。' },
+  { w:'cloudy', p:'/ˈklaʊdi/', zh:'多云的', ex:'It looks cloudy this morning.', exZh:'今早看起来多云。' },
+  { w:'rainy', p:'/ˈreɪni/', zh:'下雨的', ex:'It is rainy in April here.', exZh:'这里四月多雨。' },
+  { w:'windy', p:'/ˈwɪndi/', zh:'有风的', ex:'It is too windy to play outside.', exZh:'风太大，没法在外面玩。' },
+  { w:'snow', p:'/snoʊ/', zh:'雪', ex:'It snowed all night.', exZh:'雪下了一整夜。' },
+  { w:'temperature', p:'/ˈtemprətʃər/', zh:'温度', ex:'The temperature dropped a lot.', exZh:'温度降了很多。' },
+  { w:'degree', p:'/dɪˈɡriː/', zh:'度', ex:'It is thirty degrees today.', exZh:'今天三十度。' },
+  /* —— 家庭与生活 —— */
+  { w:'relative', p:'/ˈrelətɪv/', zh:'亲戚', ex:'I am visiting my relatives.', exZh:'我去看亲戚。' },
+  { w:'neighbor', p:'/ˈneɪbər/', zh:'邻居', ex:'My neighbor is very friendly.', exZh:'我邻居很友好。' },
+  { w:'roommate', p:'/ˈruːmmeɪt/', zh:'室友', ex:'My roommate is from Texas.', exZh:'我室友来自得州。' },
+  { w:'apartment', p:'/əˈpɑːrtmənt/', zh:'公寓', ex:'We just moved into a new apartment.', exZh:'我们刚搬进新公寓。' },
+  { w:'furniture', p:'/ˈfɜːrnɪtʃər/', zh:'家具', ex:'We need to buy some furniture.', exZh:'我们需要买些家具。' },
+  { w:'laundry', p:'/ˈlɔːndri/', zh:'洗衣', ex:'I need to do the laundry.', exZh:'我得洗衣服。' },
+  { w:'cook', p:'/kʊk/', zh:'做饭', ex:'I like to cook at home.', exZh:'我喜欢在家做饭。' },
+  /* —— 钱与时间 —— */
+  { w:'budget', p:'/ˈbʌdʒɪt/', zh:'预算', ex:'I need to stick to my budget.', exZh:'我得控制预算。' },
+  { w:'afford', p:'/əˈfɔːrd/', zh:'负担得起', ex:'I cannot afford that right now.', exZh:'我现在负担不起。' },
+  { w:'expensive', p:'/ɪkˈspensɪv/', zh:'贵的', ex:'This place is a bit expensive.', exZh:'这个地方有点贵。' },
+  { w:'cheap', p:'/tʃiːp/', zh:'便宜的', ex:'That cafe is cheap and good.', exZh:'那家咖啡馆便宜又好。' },
+  { w:'cost', p:'/kɔːst/', zh:'花费', ex:'How much does it cost?', exZh:'多少钱？' },
+  { w:'pay', p:'/peɪ/', zh:'支付', ex:'Can I pay by card?', exZh:'可以刷卡吗？' },
+  { w:'cash', p:'/kæʃ/', zh:'现金', ex:'I only have cash.', exZh:'我只有现金。' },
+  { w:'credit card', p:'/ˈkredɪt kɑːrd/', zh:'信用卡', ex:'I will pay with my credit card.', exZh:'我用信用卡支付。' },
+  { w:'later', p:'/ˈleɪtər/', zh:'稍后', ex:'I will call you later.', exZh:'我稍后打给你。' },
+  /* —— 心情与闲聊 —— */
+  { w:'excited', p:'/ɪkˈsaɪtɪd/', zh:'兴奋的', ex:'I am excited about the trip.', exZh:'我对这次旅行很兴奋。' },
+  { w:'nervous', p:'/ˈnɜːrvəs/', zh:'紧张的', ex:'I feel nervous before interviews.', exZh:'面试前我会紧张。' },
+  { w:'tired', p:'/ˈtaɪərd/', zh:'累的', ex:'I am so tired today.', exZh:'我今天好累。' },
+  { w:'bored', p:'/bɔːrd/', zh:'无聊的', ex:'I am bored on weekends.', exZh:'我周末很无聊。' },
+  { w:'funny', p:'/ˈfʌni/', zh:'有趣的', ex:'That story is really funny.', exZh:'那个故事真有趣。' },
+  { w:'amazing', p:'/əˈmeɪzɪŋ/', zh:'太棒了', ex:'The view is amazing.', exZh:'景色太棒了。' },
+  { w:'actually', p:'/ˈæktʃuəli/', zh:'其实', ex:'Actually, I prefer tea.', exZh:'其实我更喜欢茶。' },
+  { w:'maybe', p:'/ˈmeɪbi/', zh:'也许', ex:'Maybe we can meet tomorrow.', exZh:'也许我们明天能见面。' },
+  { w:'probably', p:'/ˈprɒbəbli/', zh:'可能', ex:'I will probably be late.', exZh:'我可能会迟到。' },
+  { w:'anyway', p:'/ˈeniweɪ/', zh:'总之', ex:'Anyway, let us move on.', exZh:'总之，我们继续吧。' }
 ];
 
 /* 听读素材库 */
@@ -706,7 +917,11 @@ const PASSAGES = [
   { title:'酒店入住 · 对话', en:'A: Welcome to the Grand Hotel. How can I help you?\nB: Hi, I have a reservation under the name Chen.\nA: Let me check. Yes, a single room for three nights. May I see your passport and a credit card?\nB: Here you are. Is breakfast included?\nA: Yes, it is served from seven to ten in the restaurant on the second floor.' },
   { title:'餐厅对话 · 点餐与结账', en:'A: Are you ready to order?\nB: Yes. We will start with the appetizer, and I will have the grilled chicken as my entree.\nA: Would you like anything to drink?\nB: Just water, please.\nA: Can I get you anything else?\nB: No, thanks. Could we have the check when you get a chance?' },
   { title:'派对寒暄 · 认识新朋友', en:'A: Hi, I do not think we have met. I am Mike.\nB: Nice to meet you, Mike. I am Chen. This is my first time at one of these parties.\nA: Welcome! So what brings you to the city?\nB: I am here for a year, mostly to improve my English and travel around.' },
-  { title:'问路对话 · 地铁站', en:'A: Excuse me, how do I get to the nearest subway station?\nB: Go straight for two blocks, then turn left at the intersection. The station is right across the street from the bank.\nA: Is it far?\nB: No, about five minutes on foot.\nA: Great, thanks so much!\nB: No problem. Have a nice day!' }
+  { title:'问路对话 · 地铁站', en:'A: Excuse me, how do I get to the nearest subway station?\nB: Go straight for two blocks, then turn left at the intersection. The station is right across the street from the bank.\nA: Is it far?\nB: No, about five minutes on foot.\nA: Great, thanks so much!\nB: No problem. Have a nice day!' },
+  { title:'科技新闻 · 新手机发布', en:'Tech companies unveiled their latest phones this week. The new models promise better cameras and longer battery life. Many people are waiting to see if the higher price is worth it. Experts say competition is good for consumers.' },
+  { title:'办公室对话 · 周会', en:'A: Good morning, everyone. Let us go over this week plan.\nB: I will finish the report by Wednesday.\nA: Great. And please send me the updated schedule before the meeting.\nB: No problem. I will do it right away.' },
+  { title:'家庭聚餐 · 对话', en:'A: Dinner is ready! Please come to the table.\nB: Wow, everything smells so good. Did you cook all of this?\nA: Yes, and I made your favorite dessert.\nB: You are the best. Thank you so much!' },
+  { title:'周末出游 · 对话', en:'A: Do you want to go hiking this weekend?\nB: Sure! Which trail do you recommend?\nA: There is a nice one near the lake. It takes about two hours.\nB: Sounds perfect. I will bring some snacks and water.' }
 ];
 
 /* 跟读句库 */
@@ -730,7 +945,27 @@ const SENTENCES = [
   { en:'I am not sure about that.', zh:'这个我不太确定。' },
   { en:'What do you recommend?', zh:'你有什么推荐吗？' },
   { en:'Could you give me a hand with this?', zh:'你能帮我个忙吗？' },
-  { en:'Have a nice day!', zh:'祝你今天愉快！' }
+  { en:'Have a nice day!', zh:'祝你今天愉快！' },
+  { en:'Could you recommend a good restaurant nearby?', zh:'附近有好餐厅推荐吗？' },
+  { en:'I would like a table by the window.', zh:'我想要靠窗的位子。' },
+  { en:'Sorry, I did not catch that.', zh:'抱歉，我没听清。' },
+  { en:'What time does the store close?', zh:'商店几点关门？' },
+  { en:'Do you have this in blue?', zh:'这个有蓝色的吗？' },
+  { en:'Can I get a discount?', zh:'能打个折吗？' },
+  { en:'Where can I find a taxi?', zh:'我在哪能打到车？' },
+  { en:'Please take me to this address.', zh:'请送我去这个地址。' },
+  { en:'Is it far from here?', zh:'离这里远吗？' },
+  { en:'I am looking for the restroom.', zh:'我在找洗手间。' },
+  { en:'Could you speak a little slower?', zh:'能说慢一点吗？' },
+  { en:'Let me think about it.', zh:'让我想想。' },
+  { en:'I will be right back.', zh:'我马上回来。' },
+  { en:'Nice to meet you too.', zh:'我也很高兴认识你。' },
+  { en:'How was your day?', zh:'你今天过得怎么样？' },
+  { en:'I had a great time. Thank you!', zh:'我玩得很开心，谢谢！' },
+  { en:'See you tomorrow!', zh:'明天见！' },
+  { en:'Take care!', zh:'保重！' },
+  { en:'That is a great idea.', zh:'好主意。' },
+  { en:'I totally agree with you.', zh:'我完全同意你。' }
 ];
 
 /* ================= 基础工具 ================= */
@@ -776,8 +1011,9 @@ function defaultState(){
         key:'',   // 隐私起见不再写死 key，首次使用时在设置页粘贴（只存本机 localStorage）
         model:'qwen3-tts-vd-2026-01-26',
         voice:'Cherry',
-        useQwenASR:true,
-        useQwenTTS:true
+        asrMode:'auto',   // auto：Qwen 优先、失败自动切浏览器；browser：只用浏览器；qwen：只用 Qwen
+        useQwenTTS:true,
+        autoTTS:true      // AI 回复后自动朗读
       },
       departureDate:'',
       ptsMain:60, ptsSide:25, ptsLevel:100, dropAfter:3
@@ -796,6 +1032,11 @@ function normalize(s){
   s.settings = Object.assign(def.settings, s.settings || {});
   s.settings.chat  = Object.assign(def.settings.chat, s.settings.chat || {});
   s.settings.voice = Object.assign(def.settings.voice, s.settings.voice || {});
+  // 旧版本字段迁移：useQwenASR -> asrMode
+  if (s.settings.voice.useQwenASR !== undefined && s.settings.voice.asrMode === undefined){
+    s.settings.voice.asrMode = s.settings.voice.useQwenASR ? 'auto' : 'browser';
+  }
+  delete s.settings.voice.useQwenASR;
   s.level = Object.assign(def.level, s.level || {});
   s.records = s.records || {};
   s.levelHistory = s.levelHistory || [];
@@ -917,14 +1158,13 @@ function SYSTEM(topic){
   '【今天的话题】' + topic.en + '（场景：' + topic.zh + '）\n' +
   '【我的情况】我是中文母语者，正在提升日常英语口语与流利度，一年后要去美国旅行。\n' +
   '【对话规则】\n' +
-  '1. 我们用英文对话。我每发一段话，你先自然回应、推进聊天，再视情况纠错。\n' +
-  '2. 纠错不是每轮都有：表达自然就爽快认可；有明显不地道或严重影响理解时才纠。\n' +
-  '3. 每次纠错：先给一句总体鼓励，再只挑 1-3 个最值得改的点，严格按三段格式：\n' +
+  '1. 我们用英文对话，像朋友聊天一样自然。我每说一句，你先自然回应、推进话题，再视情况纠错。\n' +
+  '2. 纠错不是每轮都有：只纠正最严重的错误（明显不地道或严重影响理解），不要每句打断；说得好就爽快认可并继续。\n' +
+  '3. 每次纠错：先一句总体鼓励，再只挑 1-3 个最值得改的点，严格按三段格式：\n' +
   '【你说】我的原话\n【更好地说】母语者会怎么说的版本\n【为什么】一句话点明区别\n' +
   '4. 纠错优先级：地道自然 > 用词准确 > 短语搭配 > 句子结构 > 语法。不影响理解的小语法错误不要提。\n' +
   '5. 每次回复 2-4 句英文，结尾自然地问一个问题，让我继续往下说。\n' +
-  '6. 收到"总结/结束"指令时，立刻用中文输出对话总结：\n' +
-  '【亮点】1-2 句\n【最值得改的 2-3 点】每点按 你说/更好地说/为什么\n【下一步建议】1 句\n控制在 180 字内。';
+  '6. 收到"结束/复盘"指令时，立刻用中文输出【今日复盘】：先给一句总体鼓励；再挑 2-3 个"可以说得更地道"的点，每条严格按：你说 → 更好地说 → 为什么；最后给一句明天的建议。控制在 180 字内。';
 }
 async function chatRequest(msgs, maxTokens){
   const cfg = state.settings.chat;
@@ -1077,14 +1317,15 @@ function renderMain(){
   if (r.summary) $('#summaryBody').innerHTML = renderText(r.summary);
 
   const canEnd = r.exchanges >= 3;
-  $('#endHint').textContent = r.mainDone ? '今日已完成' : (canEnd ? '可以随时结束对话，让老师总结。' : '再多说几句（至少 3 句）后再结束。');
+  $('#endHint').textContent = r.mainDone ? '今日已完成' : (canEnd ? '聊得差不多就点结束，老师会给出今日复盘。' : '再多说几句（至少 3 句）后再结束。');
   $('#btnEndChat').disabled = r.mainDone || !canEnd || busy;
   $('#btnCheckin').classList.toggle('hidden', !!r.mainDone);
   $('#btnCheckin').disabled = busy;
   $$('.composer').forEach(el => el.style.display = r.mainDone ? 'none' : '');
   $('#btnSend').disabled = busy;
-  $('#btnMic').disabled = busy;
-  $('#micHint').textContent = '语音：优先 Qwen 语音识别（免费）；失败或浏览器不支持时，请直接打字输入。';
+  $('#btnTalk').disabled = busy;
+  $('#btnType').disabled = busy;
+  $('#micHint').textContent = '按住说话：按住开始录音、松开自动识别并发送；AI 回复会自动朗读。也可以点 ✏️ 打字。';
 }
 
 /* ================= 主线对话逻辑 ================= */
@@ -1124,33 +1365,39 @@ function startMain(){
 function buildMsgs(r, mode){
   const msgs = [{ role:'system', content:SYSTEM(TOPICS[r.topicIdx]) }];
   r.session.slice(-20).forEach(m => msgs.push({ role:m.role, content:m.text }));
-  if (mode === 'summary') msgs.push({ role:'user', content:'我们聊得差不多了，请结束对话，按规则用中文输出本次对话总结。' });
+  if (mode === 'summary') msgs.push({ role:'user', content:'我们聊得差不多了，请结束对话，按规则用中文输出【今日复盘】。' });
   return msgs;
 }
-async function sendMessage(){
-  const ta = $('#inputText');
-  const text = ta.value.trim();
-  if (!text || busy) return;
+async function sendUserText(text){
+  const t = (text || '').trim();
+  if (!t || busy) return;
   if (!state.settings.chat.key){
     toast('请先在设置页填入 DeepSeek API Key', 'err');
     switchView('settings');
     return;
   }
   const r = ensureRecord();
-  r.session.push({ role:'user', text:text });
+  if (r.mainDone){ toast('今日主线已完成', 'err'); return; }
+  r.session.push({ role:'user', text:t });
   r.exchanges++;
-  ta.value = '';
   save();
   setBusy(true);
   try {
     const reply = await chatRequest(buildMsgs(r, 'continue'));
     r.session.push({ role:'assistant', text:reply });
     save();
+    speakAuto(reply);   // AI 回复后自动朗读
   } catch(e){
     toast('对话失败：' + e.message, 'err');
   } finally {
     setBusy(false);
   }
+}
+function sendMessage(){
+  const ta = $('#inputText');
+  const text = ta.value;
+  ta.value = '';
+  sendUserText(text);
 }
 async function endChat(){
   const r = ensureRecord();
@@ -1162,7 +1409,7 @@ async function endChat(){
     r.session.push({ role:'assistant', text:'📋 ' + summary });
     save();
   } catch(e){
-    toast('总结生成失败：' + e.message + '（仍可直接打卡）', 'err');
+    toast('复盘生成失败：' + e.message + '（仍可直接打卡）', 'err');
   } finally {
     setBusy(false);
   }
@@ -1282,9 +1529,11 @@ function handleRep(action, idx){
 }
 
 /* ================= 语音：识别与朗读 ================= */
-let micTarget = null;          // null=主线输入框；{row:i}=跟读第 i 句
+let micTarget = null;          // null=主线对话；{row:i}=跟读第 i 句
 let recorder = null, chunks = [];
 let browserSR = null;
+let capture = null;            // 当前录音会话 {type:'recorder'|'sr', onText}
+let asrFallbackUsed = false;   // 本次会话 Qwen 失败后已自动切到浏览器识别
 
 async function qwenTranscribe(blob){
   const cfg = state.settings.voice;
@@ -1332,27 +1581,40 @@ async function speak(text){
   }
 }
 
-function putTranscript(text){
-  if (micTarget && micTarget.row != null){
-    repeatState.results[micTarget.row] = '你读的（转写）：' + text;
-    renderRepeatList();
-  } else {
-    $('#inputText').value = text;
-    if (micTarget === null) $('#inputText').focus();
-  }
+/* AI 回复自动朗读：直接用浏览器 SpeechSynthesis，稳定免费 */
+function speakAuto(text){
+  if (!state.settings.voice.autoTTS) return;
+  const clean = extractSpeakable(text);
+  if (!clean || !('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(clean);
+  u.lang = 'en-US';
+  u.rate = 0.95;
+  const vs = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('en'));
+  if (vs.length) u.voice = vs[0];
+  speechSynthesis.speak(u);
 }
-function setMicUI(rec){
-  const b = $('#btnMic');
-  if (b) b.textContent = rec ? '⏹ 停止录音' : '🎤 语音';
+/* 从 AI 回复中提取适合朗读的英文（去掉【纠错标注】和中文行） */
+function extractSpeakable(text){
+  const t = String(text).replace(/【[^】]*】/g, ' ').replace(/\*\*/g, '');
+  return t.split('\n')
+    .map(l => l.trim())
+    .filter(l => /[a-zA-Z]{3,}/.test(l) && l.replace(/[^a-zA-Z]/g, '').length >= 3)
+    .join(' ');
 }
 
-async function onMic(){
-  if (busy) return;
-  const cfg = state.settings.voice;
-  if (recorder && recorder.state !== 'inactive'){ recorder.stop(); return; }
-  if (browserSR){ browserSR.stop(); return; }
-
-  if (cfg.useQwenASR && cfg.key){
+/* ---- 录音核心：按所选引擎启动/停止 ---- */
+function pickAsrEngine(){
+  const m = state.settings.voice.asrMode || 'auto';
+  if (m === 'browser') return 'browser';
+  if (m === 'qwen') return 'qwen';
+  return asrFallbackUsed ? 'browser' : 'qwen';
+}
+async function captureStart(onText){
+  if (busy) return false;
+  if ('speechSynthesis' in window) speechSynthesis.cancel(); // 开始说话时停止朗读
+  const engine = pickAsrEngine();
+  if (engine === 'qwen' && state.settings.voice.key){
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
       const mime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
@@ -1361,39 +1623,105 @@ async function onMic(){
       recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
       recorder.onstop = async () => {
         stream.getTracks().forEach(t => t.stop());
+        capture = null;
         setMicUI(false);
-        const blob = new Blob(chunks, { type:mime || 'audio/webm' });
-        setBusy(true, '正在语音识别…');
+        setBusy(true, '正在识别…');
         try {
+          const blob = new Blob(chunks, { type:mime || 'audio/webm' });
           const text = await qwenTranscribe(blob);
           if (!text) throw new Error('识别结果为空');
-          putTranscript(text);
+          if (onText) onText(text);
         } catch(e){
-          toast('Qwen 语音识别失败：' + e.message + '。请检查语音设置，或改用打字。', 'err');
+          handleAsrFail('Qwen 识别失败：' + e.message + '。');
         } finally { setBusy(false); }
       };
       recorder.start();
-      setMicUI(true);
-      toast('录音中…点击"停止录音"结束');
+      capture = { type:'recorder', onText };
+      return true;
     } catch(e){
-      toast('无法使用麦克风（权限或浏览器不支持），请改用打字', 'err');
-    }
-  } else {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SR){
-      browserSR = new SR();
-      browserSR.lang = 'en-US';
-      browserSR.interimResults = false;
-      browserSR.maxAlternatives = 1;
-      browserSR.onresult = e => putTranscript(e.results[0][0].transcript);
-      browserSR.onerror = e => toast('语音识别失败：' + e.error + '，请改用打字', 'err');
-      browserSR.onend = () => { browserSR = null; setMicUI(false); };
-      browserSR.start();
-      setMicUI(true);
-    } else {
-      toast('当前浏览器不支持语音识别，请打字输入', 'err');
+      toast('无法使用麦克风（请允许麦克风权限；仍不行就改用打字输入）', 'err');
+      setMicUI(false);
+      return false;
     }
   }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SR){
+    browserSR = new SR();
+    browserSR.lang = 'en-US';
+    browserSR.interimResults = false;
+    browserSR.maxAlternatives = 1;
+    browserSR.onresult = e => {
+      const t = e.results[0][0].transcript;
+      browserSR = null;
+      capture = null;
+      setMicUI(false);
+      if (onText) onText(t);
+    };
+    browserSR.onerror = e => {
+      browserSR = null; capture = null; setMicUI(false);
+      handleAsrFail('语音识别失败：' + (e.error || '未知错误') + '。');
+    };
+    browserSR.onend = () => {
+      if (browserSR){ browserSR = null; capture = null; setMicUI(false); }
+    };
+    browserSR.start();
+    capture = { type:'sr', onText };
+    return true;
+  }
+  toast('当前浏览器不支持语音识别，请改用打字输入', 'err');
+  return false;
+}
+function captureStop(){
+  if (capture && capture.type === 'recorder' && recorder && recorder.state !== 'inactive') recorder.stop();
+  else if (capture && capture.type === 'sr' && browserSR) browserSR.stop();
+}
+/* 识别失败：尽量自动回退到浏览器识别，或提示打字 */
+function handleAsrFail(msg){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (state.settings.voice.asrMode !== 'qwen' && !asrFallbackUsed && SR){
+    asrFallbackUsed = true;
+    toast(msg + '已自动切换浏览器语音识别，请再试一次', 'err');
+  } else if (SR){
+    toast(msg + '请在设置里改选"浏览器语音识别"，或直接打字', 'err');
+  } else {
+    toast(msg + '请直接打字输入', 'err');
+  }
+}
+function setMicUI(rec){
+  const b = $('#btnTalk');
+  if (b){
+    b.textContent = rec ? '⏹ 松开结束' : '🎤 按住说话';
+    b.classList.toggle('recording', !!rec);
+  }
+  if (!rec && micTarget && micTarget.row != null && repeatState) renderRepeatList();
+}
+function putTranscript(text){
+  if (micTarget && micTarget.row != null){
+    repeatState.results[micTarget.row] = '你读的（转写）：' + text;
+    renderRepeatList();
+  } else {
+    sendUserText(text);   // 识别结果直接作为用户气泡发出
+  }
+}
+
+/* 主线：按住说话 */
+function startTalk(){
+  if (busy){ toast('老师正在输入，请稍等', 'err'); return; }
+  const r = ensureRecord();
+  if (r.mainDone){ toast('今日主线已完成', 'err'); return; }
+  if (capture) return;
+  micTarget = null;
+  setMicUI(true);
+  captureStart(text => putTranscript(text));
+}
+function stopTalk(){ captureStop(); }
+
+/* 支线跟读：点击开始 / 再点停止 */
+async function onMic(){
+  if (capture){ captureStop(); return; }
+  setMicUI(true);
+  const ok = await captureStart(text => putTranscript(text));
+  if (!ok) setMicUI(false);
 }
 
 /* ================= 设置页 ================= */
@@ -1407,8 +1735,9 @@ function populateSettings(){
   $('#setVoiceKey').value = s.voice.key;
   $('#setVoiceModel').value = s.voice.model;
   $('#setVoiceName').value = s.voice.voice || '';
-  $('#chkQwenASR').checked = s.voice.useQwenASR;
+  $('#setAsrMode').value = s.voice.asrMode || 'auto';
   $('#chkQwenTTS').checked = s.voice.useQwenTTS;
+  $('#chkAutoTTS').checked = s.voice.autoTTS !== false;
   $('#setDeparture').value = s.departureDate || '';
   const sel = $('#setLevel'); sel.innerHTML = '';
   LEVELS.forEach((lv, i) => {
@@ -1432,8 +1761,9 @@ function readSettings(){
   s.voice.key = $('#setVoiceKey').value.trim();
   s.voice.model = $('#setVoiceModel').value.trim() || 'qwen3-tts-vd-2026-01-26';
   s.voice.voice = $('#setVoiceName').value.trim();
-  s.voice.useQwenASR = $('#chkQwenASR').checked;
+  s.voice.asrMode = $('#setAsrMode').value;
   s.voice.useQwenTTS = $('#chkQwenTTS').checked;
+  s.voice.autoTTS = $('#chkAutoTTS').checked;
   s.departureDate = $('#setDeparture').value || '';
   state.level.index = Math.min(LEVELS.length - 1, Math.max(0, parseInt($('#setLevel').value, 10) || 3));
   s.ptsMain = Math.max(1, parseInt($('#setPtsMain').value, 10) || 60);
@@ -1614,11 +1944,11 @@ function renderHistory(){
 function showHelp(){
   showModal('使用说明', 
     '<ul>' +
-    '<li><b>主线任务（口语对话）</b>是每天唯一必做任务，完成即打卡成功、+60 进度。</li>' +
+    '<li><b>主线（实时口语对话）</b>：AI 先抛出今日话题，你按住"按住说话"说一句、松开自动识别并发送，AI 回一句并自动朗读，像微信聊天一样。聊完点"结束本次对话"，AI 生成【今日复盘】（你说 → 更好地说 → 为什么）。完成主线即打卡成功、+60 进度。</li>' +
     '<li><b>支线任务</b>（单词卡 / 听读 / 跟读）是加分项：每条 +25 进度，不做不掉段、不算断签，可"稍后完成"当天补做。</li>' +
     '<li><b>段位</b>：A0-1 → C2-3，每小阶需 100 进度；连续 3 天未完成主线会掉 1 小阶。</li>' +
     '<li><b>纠错方式</b>：AI 老师优先挑"不地道"的表达，按"你说 → 更好地说 → 为什么"指出 1-3 点，不苛责小语法。</li>' +
-    '<li><b>语音</b>：优先使用 Qwen 语音识别与朗读（免费），失败时自动回退浏览器自带语音，再不行就打字。</li>' +
+    '<li><b>语音</b>：按住说话录音，Qwen 识别失败会自动回退浏览器语音识别（Chrome/Edge 最稳）；AI 回复自动朗读，也可以打字。</li>' +
     '<li><b>数据</b>：全部保存在本机浏览器，可在设置页导出 / 导入备份。</li>' +
     '<li><b>手机与更新</b>：把本文件部署到静态托管后，手机打开同一网址即可使用；我更新文件后，手机上刷新或点"检查更新"即可同步。</li>' +
     '</ul>');
@@ -1660,7 +1990,22 @@ function init(){
   $('#inputText').addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
   });
-  $('#btnMic').onclick = onMic;
+  // 按住说话：按下录音，松开识别并自动发送
+  const talk = $('#btnTalk');
+  talk.addEventListener('pointerdown', e => { e.preventDefault(); startTalk(); });
+  talk.addEventListener('pointerup', e => { e.preventDefault(); stopTalk(); });
+  talk.addEventListener('pointerleave', () => stopTalk());
+  talk.addEventListener('pointercancel', () => stopTalk());
+  talk.addEventListener('contextmenu', e => e.preventDefault());
+  $('#btnType').onclick = () => {
+    $('#voiceMode').classList.add('hidden');
+    $('#typeMode').classList.remove('hidden');
+    $('#inputText').focus();
+  };
+  $('#btnBackVoice').onclick = () => {
+    $('#typeMode').classList.add('hidden');
+    $('#voiceMode').classList.remove('hidden');
+  };
   $('#btnEndChat').onclick = endChat;
   $('#btnCheckin').onclick = completeMain;
 
@@ -1694,8 +2039,9 @@ function init(){
     $('#setVoiceBase').value = v.baseUrl;
     $('#setVoiceModel').value = v.model;
     $('#setVoiceName').value = v.voice;
-    $('#chkQwenASR').checked = true;
+    $('#setAsrMode').value = 'auto';
     $('#chkQwenTTS').checked = true;
+    $('#chkAutoTTS').checked = true;
     toast('已恢复默认语音配置（key 保留，仅保存在本机）');
   };
   $('#btnExport').onclick = exportData;
